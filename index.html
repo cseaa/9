@@ -1031,28 +1031,68 @@
                 });
             }
 
-            // --- JEWEL LOGIC ---
+            // --- JEWEL LOGIC (UPDATED WITH WORDS) ---
             setupJewelLogic() {
                 const overlay = document.getElementById('jewel-overlay');
                 const stage = document.getElementById('diamond-stage');
+                
+                // Emotional words to appear on tap
+                const clickWords = ["Best", "Soul", "Devate", "Preethi", "Gem", "Angel", "Life", "Queen", "Pure", "Divya", "Gold", "Magic"];
 
                 stage.addEventListener('click', (e) => {
                     // 1. Vanish Overlay
                     if (!overlay.classList.contains('vanished')) {
                         overlay.classList.add('vanished');
-                        
-                        // 2. Spawn Diamond Rain
-                        for(let i=0; i<15; i++) {
-                            this.particleSystem.spawnAt(e.clientX, e.clientY, 'diamond');
-                        }
-                    } else {
-                        // Just more diamonds if already vanished
+                    }
+                    
+                    // 2. Spawn Diamond Rain (Sugar/Gems)
+                    for(let i=0; i<12; i++) {
                         this.particleSystem.spawnAt(e.clientX, e.clientY, 'diamond');
                     }
+
+                    // 3. Spawn Small Word (New Feature)
+                    const word = clickWords[Math.floor(Math.random() * clickWords.length)];
+                    this.spawnClickWord(e.clientX, e.clientY, word);
                 });
             }
 
-            // --- BREWING LOGIC (UPDATED WORKFLOW) ---
+            spawnClickWord(x, y, text) {
+                const container = document.getElementById('floating-text-container');
+                const el = document.createElement('div');
+                el.innerText = text;
+                
+                // Style for mini words to look like gems/sugar text
+                Object.assign(el.style, {
+                    position: 'absolute',
+                    left: `${x}px`,
+                    top: `${y}px`,
+                    color: '#fff', 
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: '1.3rem',
+                    fontWeight: 'bold',
+                    textShadow: '0 0 15px var(--c-gold)',
+                    pointerEvents: 'none',
+                    zIndex: '1000',
+                    transform: 'translate(-50%, -50%)',
+                    whiteSpace: 'nowrap'
+                });
+
+                container.appendChild(el);
+
+                // Quick Floating Animation
+                const anim = el.animate([
+                    { transform: 'translate(-50%, -50%) scale(0.2)', opacity: 0, offset: 0 },
+                    { transform: 'translate(-50%, -80px) scale(1.2)', opacity: 1, offset: 0.3 },
+                    { transform: 'translate(-50%, -180px) scale(1)', opacity: 0, offset: 1 }
+                ], {
+                    duration: 1200,
+                    easing: 'ease-out'
+                });
+
+                anim.onfinish = () => el.remove();
+            }
+
+            // --- BREWING LOGIC ---
             setupBrewingLogic() {
                 const btn = document.getElementById('btn-brew');
                 const liquid = document.getElementById('liquid');
@@ -1119,7 +1159,7 @@
                 el.className = 'floating-message';
                 el.innerText = text;
                 
-                // IMPORTANT FIX: Position explicitly in center before translating
+                // Position explicitly in center before translating
                 el.style.left = '50%';
                 el.style.top = '50%';
                 
@@ -1135,9 +1175,9 @@
                 // Complex Animation via Web Animations API
                 const anim = el.animate([
                     { transform: `translate(-50%, 0px) translate(${randomX}px, 20px) scale(0.5)`, opacity: 0, offset: 0 },
-                    { transform: `translate(-50%, 0px) translate(${randomX}px, -80px) scale(1.1)`, opacity: 1, offset: 0.2 }, // Float Up
-                    { transform: `translate(-50%, 0px) translate(${randomX}px, -180px) scale(1)`, opacity: 1, offset: 0.8 }, // Float Higher
-                    { transform: `translate(-50%, 0px) translate(${randomX}px, -250px) scale(0.8)`, opacity: 0, offset: 1 } // Fade Out
+                    { transform: `translate(-50%, 0px) translate(${randomX}px, -80px) scale(1.1)`, opacity: 1, offset: 0.2 }, 
+                    { transform: `translate(-50%, 0px) translate(${randomX}px, -180px) scale(1)`, opacity: 1, offset: 0.8 }, 
+                    { transform: `translate(-50%, 0px) translate(${randomX}px, -250px) scale(0.8)`, opacity: 0, offset: 1 } 
                 ], {
                     duration: 4000,
                     easing: 'cubic-bezier(0.215, 0.610, 0.355, 1.000)'
