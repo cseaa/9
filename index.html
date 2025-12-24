@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SparkCoder Pro | The #1 Coding Academy for Kids</title>
+    
+    <!-- External Libraries (CDNs) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- Custom Font: Nunito (Child Friendly & Readable) -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --secondary: #F59E0B;
+            --accent: #EC4899;
+            --bg-grad-start: #EEF2FF;
+            --bg-grad-end: #E0E7FF;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.6);
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, var(--bg-grad-start) 0%, var(--bg-grad-end) 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #1F2937;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .mascot-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+        }
+
+        .btn-pulse {
+            animation: pulse-glow 2s infinite;
+        }
+        
+        .level-node {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .level-node:active {
+            transform: scale(0.95);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+
+        .locked-overlay {
+            background: rgba(0,0,0,0.05);
+            backdrop-filter: blur(2px);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-indigo-200 selection:text-indigo-900">
+
+    <!-- APP CONTAINER -->
+    <div id="app" class="relative min-h-screen flex flex-col md:flex-row max-w-7xl mx-auto md:p-4 gap-4">
+        
+        <!-- SIDEBAR (Navigation) -->
+        <aside id="sidebar" class="hidden md:flex flex-col w-64 glass-panel rounded-3xl p-6 h-[calc(100vh-2rem)] sticky top-4 z-40">
+            <div class="flex items-center gap-3 mb-10">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <h1 class="text-2xl font-extrabold text-indigo-900 tracking-tight">SparkCoder</h1>
+            </div>
+
+            <nav class="flex-1 space-y-2">
+                <button onclick="router.navigate('dashboard')" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-xl text-gray-600 hover:bg-white hover:text-indigo-600 transition-all font-bold">
+                    <i class="fa-solid fa-house"></i> <span data-i18n="home">Home</span>
+                </button>
+                <button onclick="router.navigate('learn')" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-xl text-gray-600 hover:bg-white hover:text-indigo-600 transition-all font-bold">
+                    <i class="fa-solid fa-map"></i> <span data-i18n="learn">Adventure Map</span>
+                </button>
+                <button onclick="router.navigate('arcade')" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-xl text-gray-600 hover:bg-white hover:text-indigo-600 transition-all font-bold">
+                    <i class="fa-solid fa-gamepad"></i> <span data-i18n="arcade">Arcade</span>
+                </button>
+                <button onclick="router.navigate('profile')" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-xl text-gray-600 hover:bg-white hover:text-indigo-600 transition-all font-bold">
+                    <i class="fa-solid fa-user-astronaut"></i> <span data-i18n="profile">Profile</span>
+                </button>
+            </nav>
+
+            <div class="mt-auto pt-6 border-t border-gray-200">
+                <button onclick="router.navigate('parents')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-indigo-50 text-indigo-700 font-bold hover:bg-indigo-100 transition-colors">
+                    <span data-i18n="parents">Parents Zone</span>
+                    <i class="fa-solid fa-lock text-xs"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 flex flex-col h-[calc(100vh-2rem)] relative">
+            
+            <!-- Mobile Header -->
+            <header class="md:hidden glass-panel mb-4 p-4 rounded-b-2xl flex justify-between items-center z-50 sticky top-0">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <span class="font-bold text-lg text-indigo-900">SparkCoder</span>
+                </div>
+                <button id="mobile-menu-btn" class="text-gray-600"><i class="fa-solid fa-bars text-xl"></i></button>
+            </header>
+
+            <!-- Top Bar (User Stats) -->
+            <div id="top-bar" class="hidden md:flex justify-end items-center gap-4 mb-6 px-2">
+                 <!-- Language Selector -->
+                <select id="lang-select" onchange="app.setLanguage(this.value)" class="glass-panel px-3 py-1.5 rounded-lg text-sm font-bold text-gray-600 outline-none cursor-pointer">
+                    <option value="en">🇺🇸 English</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                    <option value="hi">🇮🇳 Hindi</option>
+                    <option value="zh">🇨🇳 Chinese</option>
+                </select>
+
+                <div class="glass-panel px-4 py-2 rounded-full flex items-center gap-2 text-orange-500 font-bold">
+                    <i class="fa-solid fa-fire animate-pulse"></i>
+                    <span id="streak-display">0</span> <span class="text-gray-400 text-xs uppercase">Streak</span>
+                </div>
+                <div class="glass-panel px-4 py-2 rounded-full flex items-center gap-2 text-indigo-600 font-bold">
+                    <i class="fa-solid fa-star text-yellow-400"></i>
+                    <span id="xp-display">0</span> <span class="text-gray-400 text-xs uppercase">XP</span>
+                </div>
+                <div id="user-pill" class="glass-panel pl-2 pr-4 py-1.5 rounded-full flex items-center gap-3 cursor-pointer hover:bg-white transition-colors">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-red-400 flex items-center justify-center text-white">
+                        <i class="fa-solid fa-child"></i>
+                    </div>
+                    <span id="username-display" class="font-bold text-gray-700 text-sm">Kiddo</span>
+                </div>
+            </div>
+
+            <!-- Dynamic View Container -->
+            <div id="view-container" class="flex-1 overflow-y-auto pb-20 md:pb-0 scroll-smooth rounded-3xl relative">
+                <!-- Content Injected Here via JS -->
+            </div>
+
+        </main>
+
+        <!-- Mobile Bottom Nav -->
+        <nav class="md:hidden fixed bottom-0 left-0 w-full glass-panel border-t border-gray-200 flex justify-around p-3 z-50 pb-safe">
+            <button onclick="router.navigate('dashboard')" class="flex flex-col items-center gap-1 text-gray-500 hover:text-indigo-600">
+                <i class="fa-solid fa-house text-xl"></i>
+                <span class="text-[10px] font-bold">Home</span>
+            </button>
+            <button onclick="router.navigate('learn')" class="flex flex-col items-center gap-1 text-gray-500 hover:text-indigo-600">
+                <i class="fa-solid fa-map text-xl"></i>
+                <span class="text-[10px] font-bold">Map</span>
+            </button>
+            <button onclick="router.navigate('profile')" class="flex flex-col items-center gap-1 text-gray-500 hover:text-indigo-600">
+                <i class="fa-solid fa-user-astronaut text-xl"></i>
+                <span class="text-[10px] font-bold">Profile</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- Onboarding Modal -->
+    <div id="onboarding-modal" class="fixed inset-0 z-[60] bg-white hidden flex items-center justify-center p-4">
+        <div class="max-w-md w-full text-center">
+            <div class="w-24 h-24 bg-indigo-100 rounded-full mx-auto mb-6 flex items-center justify-center text-4xl text-indigo-600 mascot-float">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Welcome to SparkCoder!</h2>
+            <p class="text-gray-500 mb-8">Let's set up your coding adventure.</p>
+            
+            <form id="onboarding-form" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">What's your name?</label>
+                    <input type="text" id="setup-name" required class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:outline-none transition-colors" placeholder="Super Coder">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">How old are you?</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" onclick="app.selectAge(this, '6-9')" class="age-btn px-2 py-3 rounded-xl border-2 border-gray-200 hover:border-indigo-500 font-bold text-gray-600">6-9</button>
+                        <button type="button" onclick="app.selectAge(this, '10-13')" class="age-btn px-2 py-3 rounded-xl border-2 border-gray-200 hover:border-indigo-500 font-bold text-gray-600">10-13</button>
+                        <button type="button" onclick="app.selectAge(this, '14+')" class="age-btn px-2 py-3 rounded-xl border-2 border-gray-200 hover:border-indigo-500 font-bold text-gray-600">14+</button>
+                    </div>
+                    <input type="hidden" id="setup-age" required>
+                </div>
+                <div class="pt-4">
+                    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all transform hover:scale-[1.02]">Start My Adventure 🚀</button>
+                </div>
+                <p class="text-xs text-gray-400 text-center mt-4">Parental consent is required for full access.</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Premium/Payment Modal -->
+    <div id="premium-modal" class="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl flex flex-col md:flex-row relative">
+            <button onclick="document.getElementById('premium-modal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10"><i class="fa-solid fa-xmark text-xl"></i></button>
+            
+            <div class="md:w-2/5 bg-indigo-600 p-8 text-white flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIiBmaWxsLW9wYWNpdHk9IjAuMSIgZmlsbD0id2hpdGUiPjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjIiLz48L3N2Zz4=')]"></div>
+                <div class="relative z-10">
+                    <h3 class="text-2xl font-bold mb-2">SparkCoder <span class="text-yellow-300">PRO</span></h3>
+                    <p class="text-indigo-100 text-sm">You reached Level 15! Unlock the next 35 levels.</p>
+                </div>
+                <div class="relative z-10 space-y-3 mt-8">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> <span class="text-sm font-semibold">Unlock Levels 16-50</span></div>
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> <span class="text-sm font-semibold">Advanced Python & CSS</span></div>
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> <span class="text-sm font-semibold">Game Development Projects</span></div>
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> <span class="text-sm font-semibold">Official Certificates</span></div>
+                </div>
+            </div>
+
+            <div class="md:w-3/5 p-8 bg-white">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">Choose a Plan</h3>
+                <div class="space-y-3">
+                    <label class="block border-2 border-indigo-100 p-4 rounded-xl cursor-pointer hover:border-indigo-500 transition-colors relative">
+                        <input type="radio" name="plan" value="month" class="peer sr-only">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-bold text-gray-800">Monthly</h4>
+                                <p class="text-sm text-gray-500">Billed monthly</p>
+                            </div>
+                            <span class="font-bold text-indigo-600 text-xl">₹999</span>
+                        </div>
+                        <div class="absolute inset-0 border-2 border-indigo-600 rounded-xl hidden peer-checked:block pointer-events-none"></div>
+                    </label>
+
+                    <label class="block border-2 border-indigo-100 p-4 rounded-xl cursor-pointer hover:border-indigo-500 transition-colors relative bg-indigo-50">
+                        <input type="radio" name="plan" value="lifetime" class="peer sr-only" checked>
+                        <div class="absolute -top-3 right-4 bg-yellow-400 text-yellow-900 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Best Value</div>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-bold text-gray-800">Lifetime Access</h4>
+                                <p class="text-sm text-gray-500">One-time payment</p>
+                            </div>
+                            <span class="font-bold text-indigo-600 text-xl">₹9,999</span>
+                        </div>
+                        <div class="absolute inset-0 border-2 border-indigo-600 rounded-xl hidden peer-checked:block pointer-events-none"></div>
+                    </label>
+                </div>
+
+                <button onclick="payment.initiate()" class="mt-8 w-full bg-black text-white font-bold py-4 rounded-xl hover:bg-gray-800 transition-all flex items-center justify-center gap-2">
+                    <span>Unlock 35 More Levels</span> <i class="fa-solid fa-lock-open"></i>
+                </button>
+                <p class="text-xs text-gray-400 text-center mt-3">Secured by Razorpay. 100% Money Back Guarantee.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Parent Gate Modal -->
+    <div id="parent-gate-modal" class="fixed inset-0 z-[80] bg-black/80 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center">
+            <i class="fa-solid fa-shield-halved text-4xl text-gray-400 mb-4"></i>
+            <h3 class="text-lg font-bold text-gray-800 mb-2">Parents Only</h3>
+            <p class="text-gray-500 text-sm mb-4">Please solve this to continue:</p>
+            <div id="gate-question" class="text-xl font-bold mb-4 font-mono text-indigo-600"></div>
+            <input type="number" id="gate-answer" class="w-full px-4 py-2 border rounded-lg mb-4 text-center text-lg" placeholder="?">
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="document.getElementById('parent-gate-modal').classList.add('hidden')" class="px-4 py-2 rounded-lg bg-gray-100 font-bold text-gray-600">Cancel</button>
+                <button onclick="app.checkParentGate()" class="px-4 py-2 rounded-lg bg-indigo-600 font-bold text-white">Verify</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- CONFIG & CONSTANTS ---
+        const CONSTANTS = {
+            RAZORPAY_KEY: 'rzp_live_RZYwcdaxyYCvoD', 
+            TRIAL_DAYS: 3,
+            STORAGE_KEY: 'sparkcoder_data',
+            PREMIUM_GATE_LEVEL: 15
+        };
+
+        // --- CURRICULUM DATA (50 LEVELS) ---
+        const CURRICULUM = [
+            // LOGIC & ALGORITHMS (Levels 1-10)
+            { id: 1, type: 'logic', title: 'The Sandwich Bot', desc: 'Order the steps to make a sandwich.', goal: 'Computers follow orders.', items: ['Get Bread', 'Spread Jam', 'Combine'], correct: ['Get Bread', 'Spread Jam', 'Combine'], hint: 'You need bread before you can spread jam!' },
+            { id: 2, type: 'logic', title: 'Morning Routine', desc: 'Help Sparky get ready for school.', goal: 'Sequence matters.', items: ['Wake Up', 'Brush Teeth', 'Go to School'], correct: ['Wake Up', 'Brush Teeth', 'Go to School'], hint: 'You cant go to school while sleeping.' },
+            { id: 3, type: 'logic', title: 'Traffic Lights', desc: 'What order do lights change?', goal: 'Cycles.', items: ['Red', 'Green', 'Yellow'], correct: ['Red', 'Green', 'Yellow'], hint: 'Green means go, then slow down (Yellow).' },
+            { id: 4, type: 'logic', title: 'Sorting Socks', desc: 'Sort steps to pair socks.', goal: 'Grouping.', items: ['Find Sock', 'Find Match', 'Fold'], correct: ['Find Sock', 'Find Match', 'Fold'], hint: 'Find one, then the other.' },
+            { id: 5, type: 'logic', title: 'Plant a Seed', desc: 'Grow a digital flower.', goal: 'Processes.', items: ['Dig Hole', 'Place Seed', 'Water'], correct: ['Dig Hole', 'Place Seed', 'Water'], hint: 'Seed needs a hole first.' },
+            { id: 6, type: 'logic', title: 'Debug the Path', desc: 'Fix the robot path.', goal: 'Debugging.', items: ['Forward', 'Turn Right', 'Forward'], correct: ['Forward', 'Turn Right', 'Forward'], hint: 'Imagine walking the path.' },
+            { id: 7, type: 'logic', title: 'Baking Cake', desc: 'Mix it up!', goal: 'Algorithms.', items: ['Mix Batter', 'Bake', 'Frost'], correct: ['Mix Batter', 'Bake', 'Frost'], hint: 'Bake it before frosting.' },
+            { id: 8, type: 'logic', title: 'Binary Switch', desc: 'On and Off.', goal: 'Binary.', items: ['0 (Off)', '1 (On)'], correct: ['0 (Off)', '1 (On)'], hint: 'Zero is usually off.' },
+            { id: 9, type: 'logic', title: 'Loop De Loop', desc: 'Repeat actions.', goal: 'Loops.', items: ['Start', 'Run', 'Repeat'], correct: ['Start', 'Run', 'Repeat'], hint: 'Start first.' },
+            { id: 10, type: 'logic', title: 'Conditional Rain', desc: 'If Raining, then Umbrella.', goal: 'If/Else.', items: ['Check Weather', 'Take Umbrella', 'Go Out'], correct: ['Check Weather', 'Take Umbrella', 'Go Out'], hint: 'Check before you take.' },
+
+            // WEB DEVELOPMENT (HTML/CSS) (Levels 11-30)
+            { id: 11, type: 'html', title: 'Hello World', desc: 'Create a main heading.', goal: 'Use <h1> tag.', initial: '', check: '<h1>', hint: 'Type <h1>My Title</h1>' },
+            { id: 12, type: 'html', title: 'Paragraphs', desc: 'Add some text description.', goal: 'Use <p> tag.', initial: '<h1>Title</h1>', check: '<p>', hint: '<p> means paragraph.' },
+            { id: 13, type: 'html', title: 'Bold Text', desc: 'Make text strong!', goal: 'Use <b> or <strong>.', initial: '<p>This is normal.</p>', check: '<b>|<strong>', hint: 'Wrap text in <b>...</b>' },
+            { id: 14, type: 'html', title: 'Italic Text', desc: 'Slant the text.', goal: 'Use <i> or <em>.', initial: '<p>Stylish text.</p>', check: '<i>|<em>', hint: '<i> stands for italic.' },
+            { id: 15, type: 'html', title: 'Click Me', desc: 'Create a button.', goal: 'Use <button> tag.', initial: '', check: '<button>', hint: '<button>Click</button>' },
+            // --- PREMIUM GATE HERE (Level 15) ---
+            { id: 16, type: 'html', title: 'Images', desc: 'Show a picture.', goal: 'Use <img src="...">', initial: '', check: '<img', hint: '<img src="cat.jpg">' },
+            { id: 17, type: 'html', title: 'Links', desc: 'Link to Google.', goal: 'Use <a href="...">', initial: '', check: '<a href=', hint: '<a href="url">Link</a>' },
+            { id: 18, type: 'html', title: 'Lists', desc: 'Make a bullet list.', goal: 'Use <ul> and <li>.', initial: '', check: '<ul>', hint: '<ul><li>Item</li></ul>' },
+            { id: 19, type: 'html', title: 'Line Break', desc: 'Force a new line.', goal: 'Use <br>.', initial: 'Line 1 Line 2', check: '<br>', hint: 'Just type <br> between words.' },
+            { id: 20, type: 'html', title: 'Horizontal Rule', desc: 'Draw a line across.', goal: 'Use <hr>.', initial: '', check: '<hr>', hint: '<hr> is a self-closing tag.' },
+            { id: 21, type: 'html', title: 'Inputs', desc: 'Let users type.', goal: 'Use <input>.', initial: '', check: '<input', hint: '<input type="text">' },
+            { id: 22, type: 'html', title: 'Divisions', desc: 'Group elements.', goal: 'Use <div>.', initial: '', check: '<div>', hint: '<div>Content</div>' },
+            { id: 23, type: 'html', title: 'Inline Style', desc: 'Change text color.', goal: 'Use style="color:red".', initial: '<p>Color me!</p>', check: 'style=', hint: 'style="color: blue"' },
+            { id: 24, type: 'html', title: 'Backgrounds', desc: 'Change background color.', goal: 'Use style="background:..."', initial: '<div>Box</div>', check: 'background', hint: 'style="background: yellow"' },
+            { id: 25, type: 'html', title: 'Spans', desc: 'Style specific words.', goal: 'Use <span>.', initial: '<p>Hello World</p>', check: '<span>', hint: '<span>World</span>' },
+            { id: 26, type: 'html', title: 'Checkboxes', desc: 'Make a checklist.', goal: 'Input type checkbox.', initial: '', check: 'type="checkbox"', hint: '<input type="checkbox">' },
+            { id: 27, type: 'html', title: 'Placeholders', desc: 'Hint inside input.', goal: 'Use placeholder attribute.', initial: '<input>', check: 'placeholder=', hint: 'placeholder="Type here"' },
+            { id: 28, type: 'html', title: 'Classes', desc: 'Name your elements.', goal: 'Add class attribute.', initial: '<div></div>', check: 'class=', hint: 'class="box"' },
+            { id: 29, type: 'html', title: 'IDs', desc: 'Unique names.', goal: 'Add id attribute.', initial: '<div></div>', check: 'id=', hint: 'id="main"' },
+            { id: 30, type: 'html', title: 'Web Project', desc: 'Build a profile card.', goal: 'Use div, h1, p, img.', initial: '', check: 'div&h1&p&img', hint: 'Combine everything you learned!' },
+
+            // PYTHON (Levels 31-50)
+            { id: 31, type: 'python', title: 'Print Power', desc: 'Say Hello to Python.', goal: 'print("Hello")', initial: '', check: 'print', hint: 'print("Text")' },
+            { id: 32, type: 'python', title: 'Variables', desc: 'Store a name.', goal: 'name = "Sparky"', initial: '', check: '=', hint: 'x = 5' },
+            { id: 33, type: 'python', title: 'String Math', desc: 'Combine strings.', goal: 'print("A" + "B")', initial: '', check: '+', hint: '"Hello" + "World"' },
+            { id: 34, type: 'python', title: 'Numbers', desc: 'Do math.', goal: 'print(5 + 5)', initial: '', check: 'print', hint: 'No quotes for numbers.' },
+            { id: 35, type: 'python', title: 'Comments', desc: 'Leave a note.', goal: 'Use # for comment.', initial: '', check: '#', hint: '# This is hidden' },
+            { id: 36, type: 'python', title: 'Input', desc: 'Ask user name.', goal: 'input()', initial: '', check: 'input', hint: 'name = input("Name?")' },
+            { id: 37, type: 'python', title: 'If Statement', desc: 'Check a condition.', goal: 'if x > 5:', initial: 'x = 10', check: 'if', hint: 'if x > 5:' },
+            { id: 38, type: 'python', title: 'Else', desc: 'Otherwise...', goal: 'else:', initial: 'if x > 5: print("Big")', check: 'else:', hint: 'else: print("Small")' },
+            { id: 39, type: 'python', title: 'Equality', desc: 'Is it equal?', goal: 'Use ==', initial: '', check: '==', hint: 'if x == 10:' },
+            { id: 40, type: 'python', title: 'Lists', desc: 'Store many things.', goal: 'Use []', initial: '', check: '[', hint: 'items = [1, 2, 3]' },
+            { id: 41, type: 'python', title: 'Loops', desc: 'Repeat with for.', goal: 'for i in range', initial: '', check: 'for', hint: 'for i in range(5):' },
+            { id: 42, type: 'python', title: 'Functions', desc: 'Create a tool.', goal: 'def my_func():', initial: '', check: 'def', hint: 'def name():' },
+            { id: 43, type: 'python', title: 'Return', desc: 'Give back value.', goal: 'return', initial: 'def add():', check: 'return', hint: 'return 5' },
+            { id: 44, type: 'python', title: 'Booleans', desc: 'True or False.', goal: 'Use True/False', initial: '', check: 'True|False', hint: 'is_happy = True' },
+            { id: 45, type: 'python', title: 'Modules', desc: 'Import powers.', goal: 'import math', initial: '', check: 'import', hint: 'import random' },
+            { id: 46, type: 'python', title: 'While Loop', desc: 'Loop while true.', goal: 'while', initial: '', check: 'while', hint: 'while x < 10:' },
+            { id: 47, type: 'python', title: 'Comparisons', desc: 'Greater or less?', goal: 'Use < or >', initial: '', check: '<|>', hint: '5 > 3' },
+            { id: 48, type: 'python', title: 'List Access', desc: 'Get first item.', goal: 'items[0]', initial: 'l = ["a","b"]', check: '[0]', hint: 'Index starts at 0' },
+            { id: 49, type: 'python', title: 'String Upper', desc: 'SHOUT IT.', goal: '.upper()', initial: 't = "hi"', check: '.upper()', hint: 'text.upper()' },
+            { id: 50, type: 'python', title: 'Final Project', desc: 'Print a masterpiece.', goal: 'Use print, var, if.', initial: '', check: 'print&if&=', hint: 'Show us what you got!' },
+        ];
+
+        // --- STATE MANAGEMENT ---
+        const store = {
+            user: {
+                name: '',
+                ageGroup: '',
+                avatar: 'robot',
+                xp: 0,
+                streak: 0,
+                lastLogin: null,
+                isPremium: false,
+                trialStartDate: null,
+                currentLevel: 1, // 1 to 50
+                language: 'en'
+            },
+
+            init() {
+                const saved = localStorage.getItem(CONSTANTS.STORAGE_KEY);
+                if (saved) {
+                    this.user = JSON.parse(saved);
+                    // Ensure legacy data has currentLevel
+                    if (!this.user.currentLevel) this.user.currentLevel = 1;
+                    this.checkStreak();
+                    this.checkTrialStatus();
+                } else {
+                    document.getElementById('onboarding-modal').classList.remove('hidden');
+                }
+                this.updateUI();
+            },
+
+            save() {
+                localStorage.setItem(CONSTANTS.STORAGE_KEY, JSON.stringify(this.user));
+                this.updateUI();
+            },
+
+            checkStreak() {
+                const today = new Date().toDateString();
+                if (this.user.lastLogin !== today) {
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    
+                    if (this.user.lastLogin === yesterday.toDateString()) {
+                        this.user.streak++;
+                    } else if (this.user.lastLogin !== today) {
+                        this.user.streak = 1;
+                    }
+                    this.user.lastLogin = today;
+                    this.save();
+                }
+            },
+
+            checkTrialStatus() {
+                if (!this.user.trialStartDate) {
+                    this.user.trialStartDate = Date.now();
+                    this.save();
+                }
+            },
+
+            completeLevel(levelId) {
+                if (levelId === this.user.currentLevel) {
+                    this.user.currentLevel++;
+                    this.user.xp += 50;
+                    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+                    this.save();
+                    return true;
+                }
+                return false;
+            },
+
+            addXP(amount) {
+                this.user.xp += amount;
+                this.save();
+            },
+
+            updateUI() {
+                document.getElementById('username-display').innerText = this.user.name || 'Coder';
+                document.getElementById('xp-display').innerText = this.user.xp;
+                document.getElementById('streak-display').innerText = this.user.streak;
+                document.getElementById('lang-select').value = this.user.language || 'en';
+            }
+        };
+
+        // --- APP LOGIC ---
+        const app = {
+            setupName: '',
+            setupAge: '',
+
+            selectAge(btn, range) {
+                document.querySelectorAll('.age-btn').forEach(b => b.classList.remove('border-indigo-500', 'bg-indigo-50', 'text-indigo-700'));
+                btn.classList.add('border-indigo-500', 'bg-indigo-50', 'text-indigo-700');
+                document.getElementById('setup-age').value = range;
+            },
+
+            completeOnboarding(e) {
+                e.preventDefault();
+                const name = document.getElementById('setup-name').value;
+                const age = document.getElementById('setup-age').value;
+                if(!name || !age) return;
+
+                store.user.name = name;
+                store.user.ageGroup = age;
+                store.user.trialStartDate = Date.now();
+                store.user.lastLogin = new Date().toDateString();
+                store.user.streak = 1;
+                store.user.currentLevel = 1;
+                store.save();
+
+                document.getElementById('onboarding-modal').classList.add('hidden');
+                router.navigate('learn'); // Go straight to map
+            },
+
+            setLanguage(lang) {
+                store.user.language = lang;
+                store.save();
+                alert(`Language switched to ${lang.toUpperCase()}.`);
+            },
+
+            // Parent Gate
+            parentGateCallback: null,
+            gateSolution: 0,
+            
+            triggerParentGate(callback) {
+                const n1 = Math.floor(Math.random() * 10) + 1;
+                const n2 = Math.floor(Math.random() * 10) + 1;
+                this.gateSolution = n1 + n2;
+                document.getElementById('gate-question').innerText = `${n1} + ${n2} = ?`;
+                document.getElementById('gate-answer').value = '';
+                this.parentGateCallback = callback;
+                document.getElementById('parent-gate-modal').classList.remove('hidden');
+            },
+
+            checkParentGate() {
+                const ans = parseInt(document.getElementById('gate-answer').value);
+                if (ans === this.gateSolution) {
+                    document.getElementById('parent-gate-modal').classList.add('hidden');
+                    if (this.parentGateCallback) this.parentGateCallback();
+                } else {
+                    document.getElementById('gate-answer').classList.add('border-red-500');
+                }
+            }
+        };
+
+        // --- ROUTING & VIEWS ---
+        const router = {
+            currentRoute: 'dashboard',
+
+            navigate(route, params = null) {
+                this.currentRoute = route;
+                document.querySelectorAll('.nav-item').forEach(el => {
+                    el.classList.remove('bg-indigo-50', 'text-indigo-600');
+                    if(el.getAttribute('onclick').includes(route)) {
+                        el.classList.add('bg-indigo-50', 'text-indigo-600');
+                    }
+                });
+
+                const container = document.getElementById('view-container');
+                container.innerHTML = ''; 
+
+                switch(route) {
+                    case 'dashboard': this.renderDashboard(container); break;
+                    case 'learn': this.renderLearnMap(container); break;
+                    case 'lesson': this.renderLesson(container, params); break;
+                    case 'arcade': this.renderArcade(container); break;
+                    case 'profile': this.renderProfile(container); break;
+                    case 'parents': app.triggerParentGate(() => this.renderParents(container)); break;
+                }
+            },
+
+            renderDashboard(container) {
+                const nextLevel = CURRICULUM.find(l => l.id === store.user.currentLevel) || CURRICULUM[CURRICULUM.length-1];
+                
+                container.innerHTML = `
+                    <div class="p-6">
+                        <div class="glass-panel p-8 rounded-3xl mb-8 relative overflow-hidden bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+                            <div class="relative z-10">
+                                <h2 class="text-3xl font-extrabold mb-2">Hi, ${store.user.name}! 👋</h2>
+                                <p class="opacity-90 mb-4">You are on Level ${store.user.currentLevel}: ${nextLevel.title}</p>
+                                <button onclick="router.navigate('learn')" class="bg-white text-indigo-700 px-6 py-2 rounded-xl font-bold hover:bg-indigo-50 transition shadow-lg">
+                                    <i class="fa-solid fa-play"></i> Continue Adventure
+                                </button>
+                            </div>
+                            <i class="fa-solid fa-rocket absolute -right-4 -bottom-4 text-9xl text-white opacity-10 transform -rotate-12"></i>
+                        </div>
+
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Your Journey</h3>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="glass-card p-4 rounded-2xl flex items-center gap-4">
+                                <div class="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-brain"></i></div>
+                                <div><div class="font-bold text-gray-800">Logic</div><div class="text-xs text-gray-500">Levels 1-10</div></div>
+                            </div>
+                            <div class="glass-card p-4 rounded-2xl flex items-center gap-4">
+                                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-brands fa-html5"></i></div>
+                                <div><div class="font-bold text-gray-800">Web Dev</div><div class="text-xs text-gray-500">Levels 11-30</div></div>
+                            </div>
+                            <div class="glass-card p-4 rounded-2xl flex items-center gap-4">
+                                <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-brands fa-python"></i></div>
+                                <div><div class="font-bold text-gray-800">Python</div><div class="text-xs text-gray-500">Levels 31-50</div></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderLearnMap(container) {
+                // Generate 50 Level Nodes
+                let nodesHTML = '';
+                CURRICULUM.forEach((level, index) => {
+                    const isLocked = level.id > store.user.currentLevel;
+                    const isCompleted = level.id < store.user.currentLevel;
+                    const isCurrent = level.id === store.user.currentLevel;
+                    
+                    let statusClass = isLocked ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 
+                                      isCompleted ? 'bg-green-500 text-white shadow-green-200' : 
+                                      'bg-indigo-600 text-white animate-bounce shadow-indigo-300';
+                    
+                    let icon = isLocked ? `<i class="fa-solid fa-lock"></i>` : 
+                               isCompleted ? `<i class="fa-solid fa-check"></i>` : 
+                               `<i class="fa-solid fa-play"></i>`;
+
+                    // Premium Gate Logic for Visuals
+                    if (level.id > CONSTANTS.PREMIUM_GATE_LEVEL && !store.user.isPremium) {
+                        statusClass = 'bg-gray-800 text-yellow-400 border-2 border-yellow-400';
+                        icon = `<i class="fa-solid fa-crown"></i>`;
+                    }
+
+                    nodesHTML += `
+                        <div onclick="router.handleLevelClick(${level.id})" class="level-node relative flex flex-col items-center group cursor-pointer">
+                            <div class="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold shadow-lg mb-2 transition-transform transform group-hover:scale-110 ${statusClass}">
+                                ${icon}
+                            </div>
+                            <span class="text-xs font-bold text-gray-500 bg-white/80 px-2 py-1 rounded-md backdrop-blur-sm">Lvl ${level.id}</span>
+                            
+                            <!-- Tooltip -->
+                            <div class="absolute bottom-20 opacity-0 group-hover:opacity-100 transition-opacity bg-black text-white text-xs p-2 rounded w-32 text-center pointer-events-none z-10">
+                                ${level.title}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = `
+                    <div class="p-6 min-h-full">
+                        <h2 class="text-3xl font-extrabold text-indigo-900 mb-2 text-center">Adventure Map</h2>
+                        <p class="text-center text-gray-500 mb-8">Complete levels to unlock new skills!</p>
+                        
+                        <div class="flex flex-wrap justify-center gap-8 max-w-4xl mx-auto pb-10">
+                            ${nodesHTML}
+                        </div>
+                    </div>
+                `;
+            },
+
+            handleLevelClick(id) {
+                if (id > store.user.currentLevel) return; // Locked
+                
+                // Premium Check
+                if (id > CONSTANTS.PREMIUM_GATE_LEVEL && !store.user.isPremium) {
+                    document.getElementById('premium-modal').classList.remove('hidden');
+                    return;
+                }
+
+                this.navigate('lesson', { id: id });
+            },
+
+            renderLesson(container, params) {
+                const level = CURRICULUM.find(l => l.id === params.id);
+                if(!level) return;
+
+                const isLogic = level.type === 'logic';
+
+                container.innerHTML = `
+                    <div class="flex flex-col h-full">
+                        <!-- Header -->
+                        <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-white/50 backdrop-blur-sm">
+                            <button onclick="router.navigate('learn')" class="text-gray-500 hover:text-indigo-600 font-bold"><i class="fa-solid fa-arrow-left"></i> Map</button>
+                            <div class="flex flex-col items-center">
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Level ${level.id}</span>
+                                <h2 class="font-bold text-gray-800 text-lg">${level.title}</h2>
+                            </div>
+                            <button onclick="app.showHint('${level.hint}')" class="w-10 h-10 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 flex items-center justify-center transition-colors">
+                                <i class="fa-regular fa-lightbulb"></i>
+                            </button>
+                        </div>
+
+                        <!-- Workspace -->
+                        <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+                            <!-- Instructions -->
+                            <div class="md:w-1/3 p-6 bg-white/60 overflow-y-auto border-r border-gray-200">
+                                <div class="bg-indigo-50 p-4 rounded-xl mb-6 border border-indigo-100">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <div class="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center"><i class="fa-solid fa-robot"></i></div>
+                                        <span class="font-bold text-indigo-900">Dr. Sparky says:</span>
+                                    </div>
+                                    <p class="text-indigo-800 text-sm leading-relaxed">${level.desc}</p>
+                                </div>
+                                
+                                <h3 class="font-bold text-gray-700 mb-2">Your Mission:</h3>
+                                <p class="text-gray-600 mb-6 text-sm">${level.goal}</p>
+                                
+                                ${isLogic ? `<div class="text-xs text-gray-400 mb-2">Drag to reorder:</div>` : ''}
+                            </div>
+
+                            <!-- Editor / Game Area -->
+                            <div class="md:w-2/3 bg-gray-900 flex flex-col relative">
+                                ${isLogic ? this.getLogicEditor(level) : this.getCodeEditor(level)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                if (isLogic) this.initLogicDrag(level);
+            },
+
+            getCodeEditor(level) {
+                const langColor = level.type === 'html' ? 'text-orange-400' : 'text-blue-400';
+                return `
+                    <div class="flex-1 flex flex-col">
+                        <div class="bg-gray-800 px-4 py-2 text-xs font-mono text-gray-400 flex justify-between">
+                            <span>main.${level.type === 'html' ? 'html' : 'py'}</span>
+                            <span class="text-green-400">Editable</span>
+                        </div>
+                        <textarea id="code-input" class="flex-1 bg-gray-900 ${langColor} font-mono p-4 outline-none resize-none text-sm leading-relaxed" spellcheck="false">${level.initial || ''}</textarea>
+                    </div>
+                    <div class="h-1/3 bg-black border-t border-gray-700 flex flex-col">
+                        <div class="px-4 py-1 bg-gray-800 text-[10px] text-gray-400 font-bold tracking-widest uppercase">Output Preview</div>
+                        <div id="code-output" class="flex-1 p-4 font-mono text-sm text-white overflow-y-auto"></div>
+                    </div>
+                    <button onclick="router.validateLevel(${level.id})" class="absolute bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg flex items-center gap-2 transition-transform active:scale-95 z-20">
+                        <i class="fa-solid fa-play"></i> Run Code
+                    </button>
+                `;
+            },
+
+            getLogicEditor(level) {
+                return `
+                    <div class="flex-1 bg-slate-100 flex flex-col items-center justify-center p-8 relative">
+                        <div id="logic-container" class="space-y-3 w-full max-w-xs">
+                            <!-- Items injected here -->
+                        </div>
+                         <button onclick="router.validateLevel(${level.id})" class="absolute bottom-6 right-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full shadow-lg flex items-center gap-2 transition-transform active:scale-95 z-20">
+                            <i class="fa-solid fa-check"></i> Check Order
+                        </button>
+                    </div>
+                `;
+            },
+
+            initLogicDrag(level) {
+                const container = document.getElementById('logic-container');
+                // Shuffle items initially
+                const items = [...level.items].sort(() => Math.random() - 0.5);
+                
+                items.forEach(item => {
+                    const el = document.createElement('div');
+                    el.className = 'bg-white p-4 rounded-xl shadow-sm border border-gray-200 cursor-grab active:cursor-grabbing font-bold text-gray-700 flex items-center gap-3 select-none hover:border-indigo-400 transition-colors draggable-item';
+                    el.innerHTML = `<i class="fa-solid fa-grip-lines text-gray-300"></i> ${item}`;
+                    el.draggable = true;
+                    
+                    // Drag Events
+                    el.addEventListener('dragstart', () => el.classList.add('opacity-50'));
+                    el.addEventListener('dragend', () => {
+                        el.classList.remove('opacity-50');
+                        // Removed router.checkLogicOrder(level) call to fix error
+                    });
+                    
+                    container.appendChild(el);
+                });
+
+                // Simple Swap Logic for Mobile/Desktop
+                let dragged = null;
+                container.addEventListener('dragstart', e => dragged = e.target);
+                container.addEventListener('dragover', e => e.preventDefault());
+                container.addEventListener('drop', e => {
+                    e.preventDefault();
+                    if (e.target.classList.contains('draggable-item') && e.target !== dragged) {
+                        // Swap logic
+                        const all = [...container.children];
+                        const fromIndex = all.indexOf(dragged);
+                        const toIndex = all.indexOf(e.target);
+                        if (fromIndex < toIndex) {
+                            e.target.after(dragged);
+                        } else {
+                            e.target.before(dragged);
+                        }
+                    }
+                });
+            },
+
+            validateLevel(id) {
+                const level = CURRICULUM.find(l => l.id === id);
+                let success = false;
+                const outputDiv = document.getElementById('code-output');
+
+                if (level.type === 'logic') {
+                    const currentOrder = [...document.querySelectorAll('.draggable-item')].map(el => el.innerText.trim());
+                    // Remove currentOrder's raw text garbage from icon
+                    const cleanOrder = currentOrder.map(t => t.replace('', '').trim());
+                    // Actually, innerText includes icon text? No, icon is in i tag. 
+                    // Let's rely on string inclusion since innerText grabs only visible text.
+                    
+                    // Stronger check:
+                    const container = document.getElementById('logic-container');
+                    const currentItems = [...container.children].map(c => c.textContent.trim());
+                    
+                    if (JSON.stringify(currentItems) === JSON.stringify(level.correct)) {
+                        success = true;
+                        alert("Perfect Sequence! 🧠");
+                    } else {
+                        alert("Not quite right. Look at the hint!");
+                    }
+                } else {
+                    // CODE VALIDATION
+                    const code = document.getElementById('code-input').value;
+                    
+                    // Display Mock Output
+                    if(outputDiv) {
+                        outputDiv.innerHTML = `<span class="text-green-400">> Running...</span><br>`;
+                        setTimeout(() => {
+                            if (level.type === 'python' && code.includes('print')) {
+                                let match = code.match(/print\s*\((.*?)\)/);
+                                if (match) outputDiv.innerHTML += match[1].replace(/["']/g, '');
+                            } else if (level.type === 'html') {
+                                outputDiv.innerText = "Rendering HTML preview...";
+                            }
+                        }, 300);
+                    }
+
+                    // Check Criteria
+                    const checks = level.check.split('|'); // Support OR logic if needed
+                    const criteriaMet = level.check.includes('&') ? 
+                        level.check.split('&').every(c => code.includes(c)) : // AND logic
+                        checks.some(c => code.includes(c)); // Simple/OR logic
+
+                    if (criteriaMet) {
+                        success = true;
+                        setTimeout(() => {
+                            outputDiv ? outputDiv.innerHTML += `<br><br><span class="text-yellow-400">SUCCESS! 🎉</span>` : null;
+                        }, 500);
+                    } else {
+                        setTimeout(() => {
+                            outputDiv ? outputDiv.innerHTML += `<br><br><span class="text-red-400">Error: Missing something. Check the goal!</span>` : null;
+                        }, 500);
+                    }
+                }
+
+                if (success) {
+                    setTimeout(() => {
+                        const nextId = level.id + 1;
+                        store.completeLevel(level.id);
+                        
+                        // Show Success Modal/Alert
+                        const div = document.createElement('div');
+                        div.className = "fixed inset-0 bg-black/80 flex items-center justify-center z-50";
+                        div.innerHTML = `
+                            <div class="bg-white rounded-3xl p-8 text-center max-w-sm m-4 animate-bounce">
+                                <div class="text-6xl mb-4">⭐</div>
+                                <h2 class="text-2xl font-bold text-gray-800 mb-2">Level Complete!</h2>
+                                <p class="text-gray-500 mb-6">+50 XP Earned</p>
+                                <button onclick="this.parentElement.parentElement.remove(); router.navigate('dashboard')" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:scale-105 transition">Next Level ➡</button>
+                            </div>
+                        `;
+                        document.body.appendChild(div);
+                    }, 1000);
+                }
+            },
+
+            renderArcade(container) {
+                 container.innerHTML = `
+                <div class="p-6 text-center pt-20">
+                    <i class="fa-solid fa-ghost text-6xl text-indigo-300 mb-4 animate-bounce"></i>
+                    <h2 class="text-2xl font-bold text-gray-800">Arcade Mode</h2>
+                    <p class="text-gray-500 mb-8">Play mini-games built by other students!</p>
+                    <div class="bg-yellow-100 text-yellow-800 p-4 rounded-xl inline-block font-bold">
+                        Unlocks at Level 20
+                    </div>
+                </div>`;
+            },
+
+            renderProfile(container) {
+                container.innerHTML = `
+                 <div class="p-6">
+                    <div class="glass-panel p-8 rounded-3xl flex flex-col items-center text-center relative overflow-hidden">
+                         <div class="w-32 h-32 bg-gradient-to-br from-pink-400 to-red-400 rounded-full flex items-center justify-center text-white text-5xl mb-4 shadow-xl border-4 border-white z-10">
+                            <i class="fa-solid fa-user-astronaut"></i>
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-gray-800 mb-1 z-10">${store.user.name}</h2>
+                        <span class="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full text-xs font-bold mb-6 z-10">Level ${store.user.currentLevel} Coder</span>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-8 w-full max-w-lg mb-8 z-10">
+                             <div>
+                                <div class="text-2xl font-bold text-gray-800">${store.user.streak}</div>
+                                <div class="text-xs text-gray-400 uppercase font-bold">Day Streak</div>
+                             </div>
+                              <div>
+                                <div class="text-2xl font-bold text-gray-800">${store.user.xp}</div>
+                                <div class="text-xs text-gray-400 uppercase font-bold">Total XP</div>
+                             </div>
+                              <div class="hidden md:block">
+                                <div class="text-2xl font-bold text-gray-800">${store.user.currentLevel > 15 ? 'PRO' : 'Free'}</div>
+                                <div class="text-xs text-gray-400 uppercase font-bold">Plan</div>
+                             </div>
+                        </div>
+                        
+                        <!-- Background decoration -->
+                        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-indigo-50 to-transparent"></div>
+                    </div>
+                 </div>
+                `;
+            },
+            
+            renderParents(container) {
+                // ... reusing existing parent view but updated stats ...
+                 container.innerHTML = `
+                    <div class="p-8 max-w-4xl mx-auto">
+                        <div class="flex items-center gap-4 mb-8">
+                            <div class="w-16 h-16 bg-indigo-900 rounded-2xl flex items-center justify-center text-white text-3xl">
+                                <i class="fa-solid fa-shield-cat"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-3xl font-bold text-gray-800">Parent Dashboard</h2>
+                                <p class="text-gray-500">Monitor ${store.user.name}'s progress.</p>
+                            </div>
+                        </div>
+                        <div class="grid md:grid-cols-3 gap-6 mb-8">
+                            <div class="glass-card p-6 rounded-2xl">
+                                <div class="text-gray-500 text-xs font-bold uppercase mb-2">Current Level</div>
+                                <div class="text-3xl font-bold text-indigo-600">${store.user.currentLevel} / 50</div>
+                            </div>
+                             <div class="glass-card p-6 rounded-2xl">
+                                <div class="text-gray-500 text-xs font-bold uppercase mb-2">Plan Status</div>
+                                <div class="text-3xl font-bold ${store.user.isPremium ? 'text-green-600' : 'text-orange-500'}">${store.user.isPremium ? 'PREMIUM' : 'FREE'}</div>
+                            </div>
+                             <div class="glass-card p-6 rounded-2xl">
+                                <div class="text-gray-500 text-xs font-bold uppercase mb-2">XP Earned</div>
+                                <div class="text-3xl font-bold text-blue-500">${store.user.xp}</div>
+                            </div>
+                        </div>
+                        ${!store.user.isPremium ? `
+                        <div class="bg-black rounded-3xl p-8 text-white flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div>
+                                <h3 class="text-2xl font-bold mb-2">Unlock Levels 16-50</h3>
+                                <p class="text-gray-400 text-sm">Get the full curriculum today.</p>
+                            </div>
+                            <button onclick="document.getElementById('premium-modal').classList.remove('hidden')" class="bg-white text-black px-8 py-3 rounded-xl font-bold hover:bg-gray-200 transition">Upgrade</button>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+        };
+
+        app.showHint = (text) => {
+            alert(`💡 Dr. Sparky's Hint:\n\n${text}`);
+        };
+
+        // --- PAYMENT ---
+        const payment = {
+            initiate() {
+                const options = {
+                    "key": CONSTANTS.RAZORPAY_KEY, 
+                    "amount": "999900", 
+                    "currency": "INR",
+                    "name": "SparkCoder Pro",
+                    "description": "Unlock All 50 Levels",
+                    "handler": function (response){
+                        store.user.isPremium = true;
+                        store.save();
+                        document.getElementById('premium-modal').classList.add('hidden');
+                        confetti({ particleCount: 500, spread: 200 });
+                        alert("Upgrade Successful! All levels unlocked.");
+                        router.navigate('learn');
+                    }
+                };
+                try {
+                    const rzp1 = new Razorpay(options);
+                    rzp1.open();
+                } catch(e) {
+                    alert("Gateway Error. Try again.");
+                }
+            }
+        };
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            store.init();
+            document.getElementById('onboarding-form').addEventListener('submit', app.completeOnboarding);
+            document.getElementById('mobile-menu-btn').addEventListener('click', () => alert("Menu"));
+            if(store.user.name) router.navigate('dashboard');
+        });
+
+    </script>
+</body>
+</html>
