@@ -2,25 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1a0b0b">
     <title>For Chaithra C - The Coffee Queen</title>
-    <!-- Phosphor Icons for Premium Realistic UI -->
+    
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons for Realistic UI -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
     <style>
+        /* =========================================
+           1. CORE VARIABLES & RESET
+           ========================================= */
         :root {
-            --c-bg-dark: #1a0b0b;
-            --c-bg-light: #2c1a1d;
+            /* Palette */
+            --c-bg-dark: #0f0505;
+            --c-bg-panel: #1a0b0b;
+            --c-coffee-dark: #2c1a1d;
             --c-coffee: #6f4e37;
-            --c-coffee-dark: #3e2723;
+            --c-coffee-light: #8d6e63;
             --c-cream: #f3e5ab;
             --c-gold: #d4af37;
+            --c-gold-dim: #8a7223;
             --c-gold-glow: #ffd700;
             --c-diamond: #e0f7fa;
-            --c-text-main: #f5f5f5;
-            --c-text-muted: #d7ccc8;
-            --font-serif: 'Playfair Display', 'Georgia', serif;
-            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            --nav-height: 80px;
+            --c-diamond-sparkle: #ffffff;
+            --c-text-main: #fcfcfc;
+            --c-text-muted: #bcaaa4;
+            --c-glass: rgba(255, 255, 255, 0.03);
+            --c-glass-border: rgba(255, 215, 0, 0.15);
+
+            /* Typography */
+            --font-display: 'Cinzel Decorative', cursive;
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Lato', sans-serif;
+
+            /* Dimensions */
+            --nav-height: 85px;
+            --safe-area-bottom: env(safe-area-inset-bottom, 20px);
+            
+            /* Animation Curves */
+            --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
         }
 
         * {
@@ -28,37 +56,158 @@
             margin: 0;
             padding: 0;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: var(--c-bg-dark);
         }
 
         body {
-            background: radial-gradient(circle at center, var(--c-bg-light), var(--c-bg-dark));
-            color: var(--c-text-main);
             font-family: var(--font-sans);
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
+            color: var(--c-text-main);
             display: flex;
             flex-direction: column;
             position: relative;
+            /* Luxurious subtle grain texture */
+            background-image: 
+                radial-gradient(circle at 50% 0%, var(--c-coffee-dark), var(--c-bg-dark) 80%),
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
         }
 
-        /* --- Canvas Layer --- */
+        /* =========================================
+           2. UTILITIES & ANIMATIONS
+           ========================================= */
+        .hidden { display: none !important; }
+        .invisible { opacity: 0 !important; pointer-events: none !important; }
+        
+        .gold-text {
+            color: var(--c-gold);
+            text-shadow: 0 2px 15px rgba(212, 175, 55, 0.4);
+            background: linear-gradient(to bottom, #ffd700, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .gold-border {
+            border: 1px solid var(--c-gold);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Keyframes */
+        @keyframes float-y {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        @keyframes rotate-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes entrance-scale {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* =========================================
+           3. CANVAS & PARTICLES
+           ========================================= */
         #particle-canvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            z-index: 1; /* Behind content */
             pointer-events: none;
-            z-index: 5;
         }
 
-        /* --- Layout --- */
-        main {
-            flex: 1;
-            position: relative;
+        /* =========================================
+           4. FLOATING OVERLAYS
+           ========================================= */
+        #floating-text-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100; /* Above everything */
+            pointer-events: none;
             overflow: hidden;
+        }
+
+        .floating-message {
+            position: absolute;
+            font-family: var(--font-display);
+            color: var(--c-gold);
+            font-size: 1.5rem;
+            text-align: center;
+            width: auto;
+            white-space: nowrap;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.9);
+            pointer-events: none;
+            will-change: transform, opacity;
+            z-index: 100;
+        }
+
+        /* =========================================
+           5. LOADER
+           ========================================= */
+        #app-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--c-bg-dark);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease-out;
+        }
+
+        .loader-cup {
+            font-size: 4rem;
+            color: var(--c-gold);
+            animation: pulse-soft 2s infinite;
+        }
+
+        .loader-text {
+            margin-top: 20px;
+            font-family: var(--font-serif);
+            color: var(--c-cream);
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            opacity: 0.8;
+        }
+
+        /* =========================================
+           6. MAIN LAYOUT & SECTIONS
+           ========================================= */
+        main {
+            position: relative;
+            width: 100%;
+            height: 100%;
             z-index: 10;
+            overflow: hidden;
         }
 
         section {
@@ -67,550 +216,1027 @@
             left: 0;
             width: 100%;
             height: 100%;
+            padding: 20px;
+            padding-bottom: calc(var(--nav-height) + 30px);
+            padding-top: 60px; /* Safe area top */
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            /* Default State: Hidden & Gone */
             opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            visibility: hidden; 
             transform: scale(0.95);
-            padding: 20px;
-            padding-bottom: var(--nav-height);
+            /* We handle transitions manually in JS to prevent overlap */
+            transition: opacity 0.5s var(--ease-smooth), transform 0.5s var(--ease-smooth);
         }
 
         section.active {
             opacity: 1;
-            pointer-events: auto;
+            visibility: visible;
             transform: scale(1);
+            pointer-events: auto;
         }
 
-        /* --- Typography & Animations --- */
-        h1, h2, h3 {
-            font-family: var(--font-serif);
+        /* Headers */
+        h2.section-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            margin-bottom: 10px;
             text-align: center;
-            line-height: 1.2;
-        }
-
-        .gold-text {
             color: var(--c-gold);
-            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
-        .animate-pop {
-            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        p.section-subtitle {
+            font-family: var(--font-serif);
+            font-style: italic;
+            color: var(--c-text-muted);
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 0.95rem;
         }
 
-        @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.5); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes pulse-gold {
-            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
-            70% { box-shadow: 0 0 0 20px rgba(212, 175, 55, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
-        }
-
-        /* --- Components --- */
-        
-        /* 1. Coffee Cup */
-        .coffee-container {
+        /* =========================================
+           7. TAB: MAGIC (HOME)
+           ========================================= */
+        .coffee-stage {
             position: relative;
-            width: 200px;
-            height: 160px;
-            margin-bottom: 40px;
-            transform: translateY(20px);
+            width: 100%;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
         }
 
-        .cup {
+        .cup-wrapper {
+            position: relative;
+            width: 220px;
+            height: 180px;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+
+        .cup-body {
             position: absolute;
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 150px;
-            height: 120px;
-            background: linear-gradient(to right, #fdfdfd, #e0e0e0);
-            border-radius: 0 0 70px 70px;
-            box-shadow: inset -10px 0 15px rgba(0,0,0,0.1), 0 20px 30px rgba(0,0,0,0.5);
-            z-index: 2;
+            width: 160px;
+            height: 130px;
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            border-radius: 0 0 80px 80px;
+            box-shadow: 
+                inset -5px 0 20px rgba(0,0,0,0.1), 
+                0 20px 50px rgba(0,0,0,0.6),
+                0 0 0 2px rgba(255,255,255,0.1);
             overflow: hidden;
+            z-index: 5;
         }
 
-        .cup-handle {
+        .cup-rim {
             position: absolute;
-            right: 5px;
-            top: 20px;
-            width: 40px;
-            height: 60px;
-            border: 12px solid #e0e0e0;
-            border-left: none;
-            border-radius: 0 25px 25px 0;
-            z-index: 1;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: #fff;
+            z-index: 10;
         }
 
-        .coffee-liquid {
+        .liquid {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             height: 0%;
-            background: linear-gradient(to top, var(--c-coffee-dark), var(--c-coffee));
-            transition: height 3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(to top, #2e1a15, #6f4e37);
+            transition: height 4s cubic-bezier(0.37, 0, 0.63, 1);
         }
 
-        .coffee-liquid.fill {
-            height: 85%;
-        }
-
-        .cup-highlight {
+        .liquid::after {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%);
-            pointer-events: none;
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            animation: shimmer 2s infinite linear;
         }
 
-        .saucer {
+        .handle {
             position: absolute;
-            bottom: -15px;
+            right: 0px;
+            top: 30px;
+            width: 45px;
+            height: 70px;
+            border: 12px solid #e0e0e0;
+            border-left: none;
+            border-radius: 0 35px 35px 0;
+            z-index: 1;
+            box-shadow: 5px 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .plate {
+            position: absolute;
+            bottom: -20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 190px;
-            height: 20px;
-            background: #e0e0e0;
+            width: 220px;
+            height: 25px;
+            background: #dcdcdc;
             border-radius: 50%;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
             z-index: 0;
         }
 
-        /* 2. Main Button */
-        .btn-magic {
-            background: linear-gradient(45deg, var(--c-coffee), var(--c-coffee-dark));
+        .btn-action {
+            position: relative;
+            background: linear-gradient(135deg, var(--c-bg-panel), var(--c-bg-dark));
             border: 1px solid var(--c-gold);
             color: var(--c-gold);
-            padding: 18px 32px;
-            font-size: 1.1rem;
+            padding: 20px 40px;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            font-family: var(--font-serif);
-            letter-spacing: 1px;
-            transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
             overflow: hidden;
+            transition: all 0.3s ease;
             z-index: 20;
-            text-transform: uppercase;
+            margin-bottom: 20px;
         }
 
-        .btn-magic:active {
-            transform: scale(0.95);
-        }
-
-        .btn-magic::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,215,0,0.3), transparent 60%);
-            opacity: 0;
-            transform: scale(0.5);
-            transition: opacity 0.3s, transform 0.3s;
-        }
-
-        .btn-magic:hover::after {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        /* 3. Cards & Lists */
-        .card-scroller {
-            width: 100%;
-            height: 100%;
-            overflow-y: auto;
-            padding: 20px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            padding-bottom: 100px; /* Space for nav */
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 215, 0, 0.1);
-            padding: 25px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            transform: translateY(20px);
-            opacity: 0;
-            animation: slideUpFade 0.6s forwards;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
+        .btn-action::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
-            width: 4px;
+            left: -100%;
+            width: 100%;
             height: 100%;
-            background: var(--c-gold);
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+            transition: left 0.5s ease;
         }
 
-        .card h3 {
-            color: var(--c-cream);
-            margin-bottom: 10px;
-            font-size: 1.4rem;
+        .btn-action:active {
+            transform: scale(0.95);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
         }
 
-        .card p {
-            color: var(--c-text-muted);
-            font-size: 1rem;
-            line-height: 1.5;
-            font-style: italic;
+        /* =========================================
+           8. TAB: APPRECIATIONS (FAMILY)
+           ========================================= */
+        .reviews-container {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 10px;
+            /* Scrollbar hiding */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .reviews-container::-webkit-scrollbar { display: none; }
+
+        .review-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--c-glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            position: relative;
+            transform-origin: center bottom;
+            animation: entrance-scale 0.6s backwards;
         }
 
-        .card .highlight {
-            color: var(--c-gold);
-            font-weight: bold;
-            display: block;
-            margin-top: 8px;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .review-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
         }
 
-        @keyframes slideUpFade {
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        /* 4. Universe Record */
-        .record-badge {
-            width: 250px;
-            height: 250px;
+        .avatar-placeholder {
+            width: 40px;
+            height: 40px;
+            background: var(--c-gold-dim);
             border-radius: 50%;
-            border: 4px solid var(--c-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+            margin-right: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .reviewer-name {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            color: var(--c-cream);
+        }
+
+        .review-text {
+            color: var(--c-text-muted);
+            font-style: italic;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .review-emotion {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 4px 12px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            color: var(--c-gold);
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* =========================================
+           9. TAB: BLESSINGS (PRO 3D CARDS)
+           ========================================= */
+        .blessings-viewport {
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            perspective: 1200px;
+        }
+
+        .blessing-card-container {
             position: relative;
-            background: radial-gradient(circle, #3e2723, #1a0b0b);
-            box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);
-            animation: rotateBadge 20s linear infinite;
+            width: 85%;
+            max-width: 340px;
+            height: 450px;
+            transform-style: preserve-3d;
+            cursor: pointer;
         }
 
-        .record-inner {
-            text-align: center;
-            z-index: 2;
-            animation: counterRotate 20s linear infinite; /* Keeps text straight */
-        }
-
-        @keyframes rotateBadge { to { transform: rotate(360deg); } }
-        @keyframes counterRotate { to { transform: rotate(-360deg); } }
-
-        .record-star {
+        /* The actual cards stacked */
+        .blessing-card {
             position: absolute;
-            font-size: 1.5rem;
-            color: var(--c-gold);
-            filter: drop-shadow(0 0 10px var(--c-gold));
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
+            border: 2px solid var(--c-gold);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 0 30px rgba(212, 175, 55, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+            backface-visibility: hidden;
+            transition: transform 0.8s var(--ease-elastic), opacity 0.5s ease;
         }
 
-        /* 5. Navigation */
+        .blessing-icon {
+            font-size: 4rem;
+            color: var(--c-gold);
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 15px var(--c-gold));
+        }
+
+        .blessing-title {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--c-cream);
+            margin-bottom: 15px;
+        }
+
+        .blessing-kannada {
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            color: var(--c-gold);
+            line-height: 1.5;
+        }
+
+        .tap-instruction {
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.3);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: pulse-soft 2s infinite;
+        }
+
+        /* =========================================
+           10. TAB: RECORD (CERTIFICATE)
+           ========================================= */
+        .certificate-container {
+            position: relative;
+            border: 8px double var(--c-gold);
+            padding: 40px 20px;
+            width: 90%;
+            max-width: 400px;
+            background: radial-gradient(circle, #2a1a1a, #0f0505);
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.15);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cert-badge {
+            font-size: 4rem;
+            color: var(--c-gold);
+            margin-bottom: 10px;
+            animation: float-y 4s ease-in-out infinite;
+        }
+
+        .cert-title {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            color: var(--c-text-muted);
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .cert-rank {
+            font-size: 5rem;
+            font-weight: 900;
+            background: linear-gradient(to bottom, #fff, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: var(--font-serif);
+            line-height: 1;
+        }
+
+        .cert-subtitle {
+            color: var(--c-cream);
+            font-size: 1rem;
+            margin-top: 10px;
+            font-family: var(--font-serif);
+        }
+
+        .cert-quote {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 215, 0, 0.3);
+            color: var(--c-gold);
+            font-style: italic;
+        }
+
+        /* =========================================
+           11. TAB: DIAMONDS (JEWEL)
+           ========================================= */
+        .diamond-stage {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* The Overlay */
+        .jewel-hint-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            padding: 40px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            text-align: center;
+            z-index: 50;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            cursor: pointer;
+        }
+
+        .jewel-hint-text {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            color: var(--c-text-main);
+            line-height: 1.4;
+        }
+
+        .jewel-hint-sub {
+            display: block;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--c-gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* State: Vanished */
+        .jewel-hint-overlay.vanished {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+            pointer-events: none;
+        }
+
+        /* Bottom text for jewel tab */
+        .jewel-footer {
+            position: absolute;
+            bottom: 40px;
+            width: 100%;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        /* =========================================
+           12. NAVIGATION BAR (Glassmorphism)
+           ========================================= */
         nav {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 90%;
-            max-width: 400px;
-            height: 70px;
-            background: rgba(20, 10, 10, 0.85);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 40px;
+            width: 94%;
+            max-width: 420px;
+            height: var(--nav-height);
+            background: rgba(22, 11, 11, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
             display: flex;
-            justify-content: space-around;
+            justify-content: space-evenly;
             align-items: center;
-            z-index: 100;
-            padding: 0 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            z-index: 1000;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            padding-bottom: 5px;
         }
 
         .nav-item {
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 0.7rem;
-            gap: 4px;
-            cursor: pointer;
-            transition: all 0.3s;
             width: 60px;
+            height: 100%;
+            color: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.4s var(--ease-elastic);
         }
 
+        .nav-icon-box {
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Active State */
         .nav-item.active {
             color: var(--c-gold);
+        }
+
+        .nav-item.active .nav-icon-box {
             transform: translateY(-5px);
-        }
-
-        .nav-icon {
-            font-size: 1.6rem;
-            margin-bottom: 2px;
-            /* Enhance icon drop shadow for realism */
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-        }
-
-        .nav-item.active .nav-icon {
             filter: drop-shadow(0 0 8px var(--c-gold));
         }
 
-        /* Floating Text Container */
-        #floating-text-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 20;
+        .nav-item.active .nav-label {
+            opacity: 1;
+            color: #fff;
         }
 
-        .floating-message {
+        /* Active Indicator Dot */
+        .nav-item::after {
+            content: '';
             position: absolute;
-            color: var(--c-gold);
-            font-family: var(--font-serif);
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-            white-space: nowrap;
+            bottom: 12px;
+            width: 4px;
+            height: 4px;
+            background: var(--c-gold);
+            border-radius: 50%;
             opacity: 0;
-            transform: translate(-50%, -50%) scale(0.5);
-            animation: floatMessage 4s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards;
+            transform: scale(0);
+            transition: all 0.3s ease;
         }
 
-        @keyframes floatMessage {
-            0% { opacity: 0; transform: translate(-50%, 0px) scale(0.5); }
-            20% { opacity: 1; transform: translate(-50%, -50px) scale(1.1); }
-            80% { opacity: 1; transform: translate(-50%, -150px) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -200px) scale(0.8); }
-        }
-
-        /* Utility */
-        .hidden { display: none !important; }
-        .text-center { text-align: center; }
-        .mb-2 { margin-bottom: 1rem; }
-        .mt-4 { margin-top: 2rem; }
-        
-        /* Diamond Tab Specifics */
-        .diamond-area {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            cursor: pointer;
-        }
-        
-        .tap-hint {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: rgba(255,255,255,0.3);
-            pointer-events: none;
-            animation: pulse-gold 2s infinite;
+        .nav-item.active::after {
+            opacity: 1;
+            transform: scale(1);
         }
 
     </style>
 </head>
 <body>
 
+    <!-- 0. Loader -->
+    <div id="app-loader">
+        <i class="ph-fill ph-coffee loader-cup"></i>
+        <div class="loader-text">Brewing Love for Chaithra...</div>
+    </div>
+
+    <!-- 1. Background Canvas -->
     <canvas id="particle-canvas"></canvas>
 
+    <!-- 2. Floating Text Layer -->
     <div id="floating-text-container"></div>
 
+    <!-- 3. Main Content Area -->
     <main>
-        <!-- Tab 1: Coffee Magic -->
+        
+        <!-- Tab 1: Magic -->
         <section id="tab-magic" class="active">
-            <h2 class="gold-text animate-pop" style="margin-bottom: 10px;">Chaithra's Magic Brew</h2>
-            <p style="color: var(--c-cream); margin-bottom: 40px; font-size: 0.9rem;">Tap to pour appreciation</p>
+            <h2 class="section-title">Chaithra's Magic Brew</h2>
+            <p class="section-subtitle">Tap below to pour divine appreciation</p>
 
-            <div class="coffee-container">
-                <div class="cup">
-                    <div class="cup-highlight"></div>
-                    <div class="coffee-liquid" id="coffee-liquid"></div>
+            <div class="coffee-stage">
+                <div class="cup-wrapper" id="cup-wrapper">
+                    <div class="cup-body">
+                        <div class="cup-rim"></div>
+                        <div class="liquid" id="liquid"></div>
+                    </div>
+                    <div class="handle"></div>
+                    <div class="plate"></div>
                 </div>
-                <div class="cup-handle"></div>
-                <div class="saucer"></div>
             </div>
 
-            <button class="btn-magic" id="btn-brew">
-                Edu just random appreciations
+            <button class="btn-action" id="btn-brew">
+                Edu Just Random Appreciations
             </button>
         </section>
 
-        <!-- Tab 2: Appreciations -->
-        <section id="tab-appreciations">
-            <h2 class="gold-text mb-2">Who Loved It?</h2>
-            <div class="card-scroller">
-                <!-- Cards injected via JS -->
+        <!-- Tab 2: Family -->
+        <section id="tab-family">
+            <h2 class="section-title">Family's Verdict</h2>
+            <p class="section-subtitle">Everyone who tasted the magic</p>
+            <div class="reviews-container" id="reviews-list">
+                <!-- Injected via JS -->
             </div>
         </section>
 
-        <!-- Tab 3: Blessings -->
+        <!-- Tab 3: Blessings (Pro 3D Cards) -->
         <section id="tab-blessings">
-            <h2 class="gold-text mb-2">Divine Blessings</h2>
-            <div style="display: flex; flex-direction: column; gap: 30px; align-items: center; justify-content: center; height: 70%;">
-                <h3 class="animate-pop" style="font-size: 1.8rem; color: var(--c-cream);">Ninu Nanna<br><span class="gold-text" style="font-size: 2.5rem;">Pancha Prana</span></h3>
-                <h3 class="animate-pop" style="font-size: 1.5rem; color: var(--c-cream); animation-delay: 0.2s;">Sakshat<br><span class="gold-text" style="font-size: 2.2rem;">Devate</span></h3>
-                <h3 class="animate-pop" style="font-size: 1.5rem; color: var(--c-cream); animation-delay: 0.4s;">Muddina<br><span class="gold-text" style="font-size: 2.2rem;">Kandama</span></h3>
-            </div>
-        </section>
-
-        <!-- Tab 4: Universe Record -->
-        <section id="tab-record">
-            <div class="record-badge">
-                <i class="ph-fill ph-star-four record-star" style="top: 25px;"></i>
-                <i class="ph-fill ph-star-four record-star" style="bottom: 25px;"></i>
-                <i class="ph-fill ph-star-four record-star" style="left: 20px;"></i>
-                <i class="ph-fill ph-star-four record-star" style="right: 20px;"></i>
-                
-                <div class="record-inner">
-                    <h3 style="color: var(--c-gold); font-size: 0.9rem; letter-spacing: 2px;">CERTIFIED</h3>
-                    <h1 style="color: var(--c-cream); font-size: 2.5rem; margin: 10px 0;">#1</h1>
-                    <p style="color: var(--c-text-muted); font-size: 0.8rem;">IN THE UNIVERSE</p>
+            <h2 class="section-title">Divine Blessings</h2>
+            <p class="section-subtitle">Tap card to reveal next blessing</p>
+            
+            <div class="blessings-viewport">
+                <div class="blessing-card-container" id="card-stack">
+                    <!-- Cards Injected via JS -->
                 </div>
             </div>
-            <h2 class="mt-4 gold-text">Record Breaking Coffee</h2>
-            <p style="text-align: center; max-width: 300px; color: var(--c-cream); margin-top: 10px;">
-                "Ee coffee universe record madide"
-            </p>
-            <div style="margin-top: 20px; font-size: 3rem; color: var(--c-gold); filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.5));">
-                <i class="ph-fill ph-trophy"></i>
+        </section>
+
+        <!-- Tab 4: Record -->
+        <section id="tab-record">
+            <h2 class="section-title">Universe Record</h2>
+            <p class="section-subtitle">Official Certification</p>
+            
+            <div class="certificate-container">
+                <i class="ph-fill ph-seal-check cert-badge"></i>
+                <div class="cert-title">Rank</div>
+                <div class="cert-rank">#1</div>
+                <div class="cert-subtitle">Coffee in the Cosmos</div>
+                <div class="cert-quote">"Ee coffee universe record madide"</div>
             </div>
         </section>
 
-        <!-- Tab 5: Diamonds -->
-        <section id="tab-diamonds">
-            <div class="diamond-area" id="diamond-area">
-                <div class="tap-hint">Tap anywhere</div>
+        <!-- Tab 5: Jewel -->
+        <section id="tab-jewel">
+            <h2 class="section-title">Precious Gem</h2>
+            
+            <div class="diamond-stage" id="diamond-stage">
+                <!-- Overlay Logic -->
+                <div class="jewel-hint-overlay" id="jewel-overlay">
+                    <p class="jewel-hint-text">Why coffee was so best reason...</p>
+                    <span class="jewel-hint-sub">(Tap to find out)</span>
+                </div>
             </div>
-            <div style="position: absolute; bottom: 100px; text-align: center; width: 100%; pointer-events: none;">
-                <h2 class="gold-text">Precious Like You</h2>
+
+            <div class="jewel-footer">
+                <h3 class="gold-text">Like You</h3>
             </div>
         </section>
+
     </main>
 
-    <!-- Bottom Navigation with Phosphor Icons -->
+    <!-- 4. Navigation -->
     <nav>
-        <div class="nav-item active" data-tab="tab-magic">
-            <i class="nav-icon ph-fill ph-coffee"></i>
-            <span>Magic</span>
+        <div class="nav-item active" onclick="app.switchTab('tab-magic')">
+            <i class="nav-icon-box ph-fill ph-coffee"></i>
+            <span class="nav-label">Magic</span>
         </div>
-        <div class="nav-item" data-tab="tab-appreciations">
-            <i class="nav-icon ph-fill ph-heart"></i>
-            <span>Family</span>
+        <div class="nav-item" onclick="app.switchTab('tab-family')">
+            <i class="nav-icon-box ph-fill ph-heart"></i>
+            <span class="nav-label">Family</span>
         </div>
-        <div class="nav-item" data-tab="tab-blessings">
-            <i class="nav-icon ph-fill ph-sparkle"></i>
-            <span>Blessings</span>
+        <div class="nav-item" onclick="app.switchTab('tab-blessings')">
+            <i class="nav-icon-box ph-fill ph-sparkle"></i>
+            <span class="nav-label">Divine</span>
         </div>
-        <div class="nav-item" data-tab="tab-record">
-            <i class="nav-icon ph-fill ph-medal"></i>
-            <span>Record</span>
+        <div class="nav-item" onclick="app.switchTab('tab-record')">
+            <i class="nav-icon-box ph-fill ph-trophy"></i>
+            <span class="nav-label">Record</span>
         </div>
-        <div class="nav-item" data-tab="tab-diamonds">
-            <i class="nav-icon ph-fill ph-diamond"></i>
-            <span>Jewel</span>
+        <div class="nav-item" onclick="app.switchTab('tab-jewel')">
+            <i class="nav-icon-box ph-fill ph-diamond"></i>
+            <span class="nav-label">Jewel</span>
         </div>
     </nav>
 
     <script>
         /**
-         * Chaithra's Appreciation App
-         * High Performance Animation Engine & Logic
+         * =========================================
+         * CHAITHRA'S COFFEE MAGIC - PRO ENGINE
+         * =========================================
          */
 
-        // --- Data & Content ---
-        const MESSAGES = [
-            "Ninu nanna pancha prana kandama",
-            "Ninu madidu coffee thumba thumba infinity astu esta aythu",
-            "Papu devate kandama",
-            "Ee coffee alli ninna preethi ide",
-            "Sakshat deivada prasada",
-            "Nin muddina ganda kandama loves you",
-            "Divine Taste!",
-            "Blessed Hands!"
-        ];
+        const APP_DATA = {
+            messages: [
+                "Ninu nanna pancha prana kandama",
+                "Ninu madidu coffee thumba thumba infinity astu esta aythu",
+                "Papu devate kandama",
+                "Ee coffee alli ninna preethi ide",
+                "Sakshat deivada prasada",
+                "Nin muddina ganda kandama loves you",
+                "Divine Taste!",
+                "Blessed Hands!"
+            ],
+            reviews: [
+                { name: "Appa", text: "Simple aagi helbeku andre... Adbhuta!", emotion: "Proud Father" },
+                { name: "Amma", text: "Yen ruci kanda... Kai gunana idu.", emotion: "Happy Mother" },
+                { name: "Bigie", text: "Best coffee ever tasted!", emotion: "Amazed" },
+                { name: "Bavi", text: "Inond cup beku!", emotion: "Delighted" },
+                { name: "Ganda", text: "Nin kai inda bandiro ee coffee sakshat deivada prasada.", emotion: "Blessed Forever" }
+            ],
+            blessings: [
+                { icon: "ph-heart", title: "Pancha Prana", text: "Ninu nanna pancha prana kandama" },
+                { icon: "ph-crown", title: "Devate", text: "Sakshat Devate Neenu" },
+                { icon: "ph-baby", title: "Kandama", text: "Muddina Kandama Forever" },
+                { icon: "ph-star", title: "Infinity", text: "Preethi Infinity Astu Ide" }
+            ]
+        };
 
-        const FAMILY_REVIEWS = [
-            { name: "Appa", review: "Simple aagi helbeku andre... Adbhuta!", feeling: "Proud" },
-            { name: "Amma", review: "Yen ruci kanda... Kai gunana idu.", feeling: "Happy" },
-            { name: "Bigie", review: "Best coffee ever tasted!", feeling: "Amazed" },
-            { name: "Bavi", review: "Inond cup beku!", feeling: "Delighted" },
-            { name: "Ganda", review: "Nin kai inda bandiro ee coffee sakshat deivada prasada.", feeling: "Blessed Forever" }
-        ];
+        class AppController {
+            constructor() {
+                this.currentTab = 'tab-magic';
+                this.isTransitioning = false;
+                this.isBrewing = false;
+                
+                this.particleSystem = new ParticleSystem();
+                
+                this.init();
+            }
 
-        // --- Canvas Engine ---
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
-        let width, height;
-        let particles = [];
-        let animationId;
+            init() {
+                // Loader
+                window.addEventListener('load', () => {
+                    setTimeout(() => {
+                        document.getElementById('app-loader').style.opacity = '0';
+                        setTimeout(() => document.getElementById('app-loader').remove(), 800);
+                        this.particleSystem.spawnAmbience();
+                    }, 1500);
+                });
 
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
+                this.renderReviews();
+                this.renderBlessingCards();
+                this.setupJewelLogic();
+                this.setupBrewingLogic();
+            }
+
+            // --- STRICT TAB SWITCHING LOGIC ---
+            switchTab(targetId) {
+                if (this.currentTab === targetId || this.isTransitioning) return;
+                
+                this.isTransitioning = true;
+                const oldSection = document.getElementById(this.currentTab);
+                const newSection = document.getElementById(targetId);
+                const navItems = document.querySelectorAll('.nav-item');
+
+                // 1. Update Nav UI
+                navItems.forEach(item => item.classList.remove('active'));
+                const targetIndex = ['tab-magic', 'tab-family', 'tab-blessings', 'tab-record', 'tab-jewel'].indexOf(targetId);
+                navItems[targetIndex].classList.add('active');
+
+                // 2. Strict Exit (Wait for fade out)
+                oldSection.classList.remove('active');
+                
+                setTimeout(() => {
+                    // 3. Enter New Section
+                    this.currentTab = targetId;
+                    newSection.classList.add('active');
+                    this.onTabEnter(targetId);
+                    this.isTransitioning = false;
+                }, 500); // Matches CSS transition duration
+            }
+
+            onTabEnter(tabId) {
+                // Special logic for specific tabs
+                if (tabId === 'tab-jewel') {
+                    // Reset overlay visibility
+                    const overlay = document.getElementById('jewel-overlay');
+                    overlay.classList.remove('vanished');
+                }
+            }
+
+            // --- CONTENT RENDERERS ---
+            renderReviews() {
+                const container = document.getElementById('reviews-list');
+                APP_DATA.reviews.forEach((r, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'review-card';
+                    div.style.animationDelay = `${i * 0.1}s`;
+                    div.innerHTML = `
+                        <div class="review-header">
+                            <div class="avatar-placeholder">${r.name[0]}</div>
+                            <div class="reviewer-name">${r.name}</div>
+                        </div>
+                        <div class="review-text">"${r.text}"</div>
+                        <div class="review-emotion">${r.emotion}</div>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            renderBlessingCards() {
+                const stack = document.getElementById('card-stack');
+                // Create cards in reverse order so first is on top visually via z-index
+                [...APP_DATA.blessings].reverse().forEach((b, i) => {
+                    const card = document.createElement('div');
+                    card.className = 'blessing-card';
+                    // Stacking effect
+                    card.style.transform = `translateZ(-${i * 40}px) translateY(-${i * 10}px)`;
+                    card.style.zIndex = 10 - i;
+                    card.innerHTML = `
+                        <i class="ph-fill ${b.icon} blessing-icon"></i>
+                        <h3 class="blessing-title">${b.title}</h3>
+                        <p class="blessing-kannada">"${b.text}"</p>
+                        <div class="tap-instruction">Tap for next blessing</div>
+                    `;
+                    
+                    // Tap Interaction to cycle cards
+                    card.onclick = (e) => {
+                        e.stopPropagation();
+                        // Fly out animation
+                        card.style.transform = `translate(150%, -50%) rotate(20deg)`;
+                        card.style.opacity = '0';
+                        
+                        setTimeout(() => {
+                            // Move to bottom of stack logic (visual reset only for demo loop)
+                            stack.prepend(card);
+                            // Reset style after it's behind
+                            requestAnimationFrame(() => {
+                                card.style.transition = 'none';
+                                card.style.transform = `translateZ(-120px) translateY(-30px)`;
+                                card.style.opacity = '1';
+                                card.style.zIndex = 0;
+                                
+                                // Re-enable transition and organize stack
+                                setTimeout(() => {
+                                    card.style.transition = '';
+                                    this.restackCards();
+                                }, 50);
+                            });
+                        }, 500);
+                    };
+                    stack.appendChild(card);
+                });
+            }
+
+            restackCards() {
+                const cards = document.querySelectorAll('.blessing-card');
+                // We need to re-assign transforms based on visual order
+                // The last child in DOM is visually on top usually if absolute, 
+                // but here we appended in reverse. 
+                // Let's just reset all based on current DOM order
+                const reversed = [...cards].reverse(); // Top card is last in DOM
+                reversed.forEach((card, i) => {
+                    card.style.zIndex = 10 - i;
+                    card.style.transform = `translateZ(-${i * 40}px) translateY(-${i * 10}px)`;
+                });
+            }
+
+            // --- JEWEL LOGIC ---
+            setupJewelLogic() {
+                const overlay = document.getElementById('jewel-overlay');
+                const stage = document.getElementById('diamond-stage');
+
+                stage.addEventListener('click', (e) => {
+                    // 1. Vanish Overlay
+                    if (!overlay.classList.contains('vanished')) {
+                        overlay.classList.add('vanished');
+                        
+                        // 2. Spawn Diamond Rain
+                        for(let i=0; i<15; i++) {
+                            this.particleSystem.spawnAt(e.clientX, e.clientY, 'diamond');
+                        }
+                    } else {
+                        // Just more diamonds if already vanished
+                        this.particleSystem.spawnAt(e.clientX, e.clientY, 'diamond');
+                    }
+                });
+            }
+
+            // --- BREWING LOGIC (UPDATED WORKFLOW) ---
+            setupBrewingLogic() {
+                const btn = document.getElementById('btn-brew');
+                const liquid = document.getElementById('liquid');
+
+                btn.addEventListener('click', () => {
+                    if (this.isBrewing) return;
+                    this.isBrewing = true;
+                    btn.disabled = true;
+
+                    // PHASE 1: FILL COFFEE (0s)
+                    liquid.style.height = '85%';
+                    btn.innerText = "Heating Up...";
+                    
+                    // PHASE 2: ADDING SUGAR/MAGIC (starts at 1.5s)
+                    setTimeout(() => {
+                        btn.innerText = "Adding Sugar & Magic...";
+                        // Spawn falling sprinkles/diamonds into cup center
+                        const rect = document.querySelector('.cup-body').getBoundingClientRect();
+                        const centerX = rect.left + rect.width/2;
+                        const centerY = rect.top; // Above cup
+                        
+                        // Burst of 'sugar' particles
+                        for(let i=0; i<15; i++) {
+                            setTimeout(() => {
+                                this.particleSystem.spawnAt(centerX + (Math.random()-0.5)*40, centerY - 50, 'diamond');
+                            }, i * 100);
+                        }
+                    }, 1500);
+
+                    // PHASE 3: AROMA/STEAM (starts at 3.0s)
+                    let steamTimer;
+                    setTimeout(() => {
+                        btn.innerText = "Releasing Divine Aroma...";
+                        steamTimer = setInterval(() => {
+                            const rect = document.querySelector('.cup-body').getBoundingClientRect();
+                            this.particleSystem.spawnAt(rect.left + rect.width/2, rect.top + 40, 'steam');
+                        }, 150);
+                    }, 3000);
+
+                    // PHASE 4: FLOATING MESSAGES (starts at 4.5s)
+                    let msgIndex = 0;
+                    setTimeout(() => {
+                        btn.innerText = "Manifesting Love...";
+                        let msgTimer = setInterval(() => {
+                            if (msgIndex >= APP_DATA.messages.length) {
+                                clearInterval(msgTimer);
+                                clearInterval(steamTimer);
+                                this.isBrewing = false;
+                                btn.disabled = false;
+                                btn.innerText = "Enjoy Kandama!";
+                                this.particleSystem.explodeConfetti();
+                                return;
+                            }
+                            this.spawnFloatingText(APP_DATA.messages[msgIndex]);
+                            msgIndex++;
+                        }, 1200);
+                    }, 4500);
+                });
+            }
+
+            spawnFloatingText(text) {
+                const container = document.getElementById('floating-text-container');
+                const el = document.createElement('div');
+                el.className = 'floating-message';
+                el.innerText = text;
+                
+                // IMPORTANT FIX: Position explicitly in center before translating
+                el.style.left = '50%';
+                el.style.top = '50%';
+                
+                // Randomize start position slightly (relative to center)
+                const randomX = (Math.random() - 0.5) * 60; 
+                
+                // Start a bit lower (near cup) and invisible
+                el.style.transform = `translate(${randomX}px, 0px) scale(0.5)`; 
+                el.style.opacity = '0';
+
+                container.appendChild(el);
+
+                // Complex Animation via Web Animations API
+                const anim = el.animate([
+                    { transform: `translate(-50%, 0px) translate(${randomX}px, 20px) scale(0.5)`, opacity: 0, offset: 0 },
+                    { transform: `translate(-50%, 0px) translate(${randomX}px, -80px) scale(1.1)`, opacity: 1, offset: 0.2 }, // Float Up
+                    { transform: `translate(-50%, 0px) translate(${randomX}px, -180px) scale(1)`, opacity: 1, offset: 0.8 }, // Float Higher
+                    { transform: `translate(-50%, 0px) translate(${randomX}px, -250px) scale(0.8)`, opacity: 0, offset: 1 } // Fade Out
+                ], {
+                    duration: 4000,
+                    easing: 'cubic-bezier(0.215, 0.610, 0.355, 1.000)'
+                });
+
+                anim.onfinish = () => el.remove();
+            }
         }
-        window.addEventListener('resize', resize);
-        resize();
+
+        /**
+         * =========================================
+         * PARTICLE PHYSICS ENGINE (Canvas)
+         * =========================================
+         */
+        class ParticleSystem {
+            constructor() {
+                this.canvas = document.getElementById('particle-canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.particles = [];
+                
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+                this.loop();
+            }
+
+            resize() {
+                this.width = this.canvas.width = window.innerWidth;
+                this.height = this.canvas.height = window.innerHeight;
+            }
+
+            spawnAt(x, y, type) {
+                this.particles.push(new Particle(x, y, type));
+            }
+
+            spawnAmbience() {
+                // Background subtle dust
+                setInterval(() => {
+                    if (document.hidden) return;
+                    this.particles.push(new Particle(Math.random()*this.width, Math.random()*this.height, 'dust'));
+                }, 200);
+            }
+
+            explodeConfetti() {
+                const cx = this.width / 2;
+                const cy = this.height / 2;
+                for(let i=0; i<80; i++) {
+                    this.particles.push(new Particle(cx, cy, 'confetti'));
+                }
+            }
+
+            loop() {
+                this.ctx.clearRect(0, 0, this.width, this.height);
+                
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const p = this.particles[i];
+                    p.update();
+                    p.draw(this.ctx);
+                    if (p.life <= 0) this.particles.splice(i, 1);
+                }
+
+                requestAnimationFrame(() => this.loop());
+            }
+        }
 
         class Particle {
             constructor(x, y, type) {
                 this.x = x;
                 this.y = y;
-                this.type = type; // 'steam', 'sparkle', 'diamond', 'confetti'
+                this.type = type;
                 this.life = 1;
-                this.decay = Math.random() * 0.01 + 0.005;
                 
                 if (type === 'steam') {
                     this.vx = (Math.random() - 0.5) * 1;
-                    this.vy = -Math.random() * 2 - 1;
-                    this.size = Math.random() * 20 + 10;
-                    this.color = `rgba(255, 255, 255, 0.1)`;
-                } else if (type === 'sparkle') {
-                    this.vx = (Math.random() - 0.5) * 2;
-                    this.vy = (Math.random() - 0.5) * 2;
-                    this.size = Math.random() * 3;
-                    this.color = `rgba(255, 215, 0, ${Math.random()})`;
+                    this.vy = -Math.random() * 2 - 1.5;
+                    this.size = Math.random() * 15 + 10;
+                    this.decay = 0.008;
+                    this.color = 'rgba(255,255,255,0.15)';
                 } else if (type === 'diamond') {
-                    this.vx = (Math.random() - 0.5) * 4;
-                    this.vy = Math.random() * -5 - 2; // Shoot up then fall
-                    this.gravity = 0.1;
+                    this.vx = (Math.random() - 0.5) * 6;
+                    this.vy = Math.random() * -8 - 2;
+                    this.gravity = 0.3;
                     this.size = Math.random() * 8 + 4;
+                    this.decay = 0.01;
                     this.rotation = Math.random() * 360;
-                    this.rotationSpeed = (Math.random() - 0.5) * 10;
+                    this.rotSpeed = (Math.random() - 0.5) * 15;
                 } else if (type === 'confetti') {
-                    this.vx = (Math.random() - 0.5) * 10;
-                    this.vy = (Math.random() - 1) * 15;
-                    this.gravity = 0.4;
-                    this.size = Math.random() * 6 + 4;
-                    this.color = ['#d4af37', '#f3e5ab', '#ffffff', '#e91e63'][Math.floor(Math.random() * 4)];
+                    this.vx = (Math.random() - 0.5) * 12;
+                    this.vy = (Math.random() - 0.5) * 12 - 5;
+                    this.gravity = 0.2;
+                    this.size = Math.random() * 6 + 3;
+                    this.decay = 0.01;
+                    this.color = ['#ffd700', '#f3e5ab', '#ffffff'][Math.floor(Math.random() * 3)];
                     this.rotation = Math.random() * 360;
+                } else if (type === 'dust') {
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                    this.size = Math.random() * 2;
+                    this.decay = 0.005;
+                    this.color = 'rgba(212, 175, 55, 0.4)';
                 }
             }
 
@@ -619,10 +1245,8 @@
                 this.y += this.vy;
                 this.life -= this.decay;
 
-                if (this.type === 'diamond' || this.type === 'confetti') {
-                    this.vy += this.gravity || 0;
-                    this.rotation += this.rotationSpeed || 5;
-                }
+                if (this.gravity) this.vy += this.gravity;
+                if (this.rotation !== undefined) this.rotation += (this.rotSpeed || 5);
             }
 
             draw(ctx) {
@@ -634,16 +1258,9 @@
                     ctx.beginPath();
                     ctx.arc(0, 0, this.size, 0, Math.PI * 2);
                     ctx.fillStyle = this.color;
-                    ctx.filter = 'blur(10px)';
+                    ctx.filter = 'blur(8px)';
                     ctx.fill();
                     ctx.filter = 'none';
-                } else if (this.type === 'sparkle') {
-                    ctx.beginPath();
-                    ctx.arc(0, 0, this.size, 0, Math.PI * 2);
-                    ctx.fillStyle = this.color;
-                    ctx.shadowBlur = 10;
-                    ctx.shadowColor = 'gold';
-                    ctx.fill();
                 } else if (this.type === 'diamond') {
                     ctx.rotate(this.rotation * Math.PI / 180);
                     ctx.fillStyle = '#e0f7fa';
@@ -654,178 +1271,27 @@
                     ctx.lineTo(-this.size, 0);
                     ctx.closePath();
                     ctx.fill();
-                    // Shine
-                    ctx.strokeStyle = 'white';
+                    ctx.shadowColor = 'white';
+                    ctx.shadowBlur = 10;
                     ctx.stroke();
                 } else if (this.type === 'confetti') {
                     ctx.rotate(this.rotation * Math.PI / 180);
                     ctx.fillStyle = this.color;
                     ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+                } else if (this.type === 'dust') {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.shadowBlur = 4;
+                    ctx.shadowColor = 'gold';
+                    ctx.fill();
                 }
-
                 ctx.restore();
             }
         }
 
-        function loop() {
-            ctx.clearRect(0, 0, width, height);
-            
-            // Global ambient sparkles
-            if (Math.random() < 0.1) {
-                particles.push(new Particle(Math.random() * width, Math.random() * height, 'sparkle'));
-            }
-
-            // Update & Draw
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                p.update();
-                p.draw(ctx);
-                if (p.life <= 0) particles.splice(i, 1);
-            }
-
-            animationId = requestAnimationFrame(loop);
-        }
-        loop();
-
-        // --- Logic & Interaction ---
-        
-        // 1. Navigation
-        const navItems = document.querySelectorAll('.nav-item');
-        const sections = document.querySelectorAll('section');
-
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                // UI Update
-                navItems.forEach(n => n.classList.remove('active'));
-                item.classList.add('active');
-
-                // Section Switch
-                const targetId = item.getAttribute('data-tab');
-                sections.forEach(sec => {
-                    sec.classList.remove('active');
-                    if (sec.id === targetId) sec.classList.add('active');
-                });
-            });
-        });
-
-        // 2. Tab: Coffee Magic Interaction
-        const btnBrew = document.getElementById('btn-brew');
-        const liquid = document.getElementById('coffee-liquid');
-        let isBrewing = false;
-
-        btnBrew.addEventListener('click', () => {
-            if (isBrewing) return;
-            isBrewing = true;
-            btnBrew.style.transform = "scale(0.95)";
-            
-            // Fill Coffee
-            liquid.classList.add('fill');
-
-            // Sound effect (simulated visual feedback since no audio files)
-            btnBrew.innerText = "Brewing Love...";
-
-            // Steam Emitters
-            let steamInterval = setInterval(() => {
-                const rect = document.querySelector('.cup').getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height * 0.4;
-                for(let i=0; i<3; i++) {
-                    particles.push(new Particle(centerX + (Math.random()-0.5)*50, centerY, 'steam'));
-                }
-            }, 100);
-
-            // Trigger Floating Words Sequence
-            let msgIndex = 0;
-            let msgInterval = setInterval(() => {
-                if(msgIndex >= MESSAGES.length) {
-                    clearInterval(msgInterval);
-                    clearInterval(steamInterval);
-                    isBrewing = false;
-                    btnBrew.innerText = "Enjoy Kandama!";
-                    btnBrew.style.transform = "scale(1)";
-                    explodeConfetti();
-                    return;
-                }
-                
-                spawnFloatingText(MESSAGES[msgIndex]);
-                msgIndex++;
-            }, 800);
-        });
-
-        function spawnFloatingText(text) {
-            const container = document.getElementById('floating-text-container');
-            const el = document.createElement('div');
-            el.className = 'floating-message';
-            el.innerText = text;
-            el.style.left = '50%';
-            el.style.top = '40%';
-            // Random slight offset
-            const offset = (Math.random() - 0.5) * 100;
-            el.style.marginLeft = `${offset}px`;
-            
-            container.appendChild(el);
-            setTimeout(() => el.remove(), 4000);
-        }
-
-        function explodeConfetti() {
-            const rect = document.querySelector('.cup').getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            
-            for(let i=0; i<100; i++) {
-                particles.push(new Particle(centerX, centerY, 'confetti'));
-            }
-        }
-
-        // 3. Tab: Appreciations Content Loader
-        const cardScroller = document.querySelector('.card-scroller');
-        FAMILY_REVIEWS.forEach((item, index) => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.style.animationDelay = `${index * 0.1}s`;
-            card.innerHTML = `
-                <h3>${item.name}</h3>
-                <p>"${item.review}"</p>
-                <span class="highlight">${item.feeling}</span>
-            `;
-            cardScroller.appendChild(card);
-        });
-
-        // 4. Tab: Diamonds Interaction
-        const diamondArea = document.getElementById('diamond-area');
-        diamondArea.addEventListener('click', (e) => {
-            // Spawn diamonds at click position
-            for(let i=0; i<10; i++) {
-                particles.push(new Particle(e.clientX, e.clientY, 'diamond'));
-            }
-            
-            // Random compliments
-            const words = ["Preethi", "Devate", "Pancha Prana", "Queen", "Gem"];
-            const word = words[Math.floor(Math.random() * words.length)];
-            
-            const el = document.createElement('div');
-            el.style.position = 'absolute';
-            el.style.left = e.clientX + 'px';
-            el.style.top = e.clientY + 'px';
-            el.style.color = 'white';
-            el.style.fontWeight = 'bold';
-            el.style.pointerEvents = 'none';
-            el.innerText = word;
-            el.animate([
-                { transform: 'translate(-50%, 0) scale(0.5)', opacity: 1 },
-                { transform: 'translate(-50%, -50px) scale(1.5)', opacity: 0 }
-            ], { duration: 1000, easing: 'ease-out' });
-            
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 1000);
-            
-            // Hide hint
-            const hint = document.querySelector('.tap-hint');
-            if(hint) hint.style.opacity = '0';
-        });
-
-        // Initial setup
-        spawnFloatingText("Welcome Chaithra!");
+        // Initialize App
+        const app = new AppController();
 
     </script>
 </body>
