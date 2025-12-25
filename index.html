@@ -312,6 +312,7 @@
             height: 0%;
             background: linear-gradient(to top, #2e1a15, #6f4e37);
             transition: height 4s cubic-bezier(0.37, 0, 0.63, 1);
+            z-index: 15;
         }
 
         .liquid::after {
@@ -323,6 +324,27 @@
             height: 10px;
             background: rgba(255,255,255,0.1);
             animation: shimmer 2s infinite linear;
+        }
+
+        /* BRAND LABEL ON CUP - NEWLY ADDED */
+        .cup-label {
+            position: absolute;
+            top: 60%; /* "Little down" as requested */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            text-align: center;
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: var(--c-gold); /* Gold to match and stand out against dark liquid */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            z-index: 20; /* Above liquid */
+            opacity: 0; /* Hidden initially */
+            transition: opacity 2s ease-in;
+            pointer-events: none;
+            letter-spacing: 1px;
+            line-height: 1.2;
         }
 
         .handle {
@@ -770,6 +792,8 @@
                     <div class="cup-body">
                         <div class="cup-rim"></div>
                         <div class="liquid" id="liquid"></div>
+                        <!-- BRAND LABEL -->
+                        <div class="cup-label" id="cup-label">CS Brand Coffee</div>
                     </div>
                     <div class="handle"></div>
                     <div class="plate"></div>
@@ -1095,6 +1119,7 @@
             setupBrewingLogic() {
                 const btn = document.getElementById('btn-brew');
                 const liquid = document.getElementById('liquid');
+                const cupLabel = document.getElementById('cup-label'); // Get the label
 
                 btn.addEventListener('click', () => {
                     if (this.isBrewing) return;
@@ -1103,6 +1128,9 @@
 
                     // PHASE 1: FILL COFFEE (0s)
                     liquid.style.height = '85%';
+                    // REVEAL LABEL NOW
+                    cupLabel.style.opacity = '1';
+                    
                     btn.innerText = "Heating Up...";
                     
                     // PHASE 2: ADDING SUGAR/MAGIC (starts at 1.5s)
@@ -1335,7 +1363,3 @@
     </script>
 </body>
 </html>
-
-
-
-
